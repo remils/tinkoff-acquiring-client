@@ -1,0 +1,38 @@
+{
+  "name": "sergey-zatulivetrov/tinkoff-acquiring-client",
+  "type": "library",
+  "description": "Client for working with Tinkoff's acquiring REST API",
+  "keywords": [
+    "tinkoff",
+    "acquiring",
+    "credit card",
+    "client"
+  ],
+  "homepage": "https://github.com/sergey-zatulivetrov/tinkoff-acquiring-client",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sergey Zatulivetrov",
+      "email": "remils@mail.ru"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "ext-json": "*",
+    "guzzlehttp/guzzle": "~6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "SergeyZatulivetrov\\TinkoffAcquiring\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SergeyZatulivetrov\\TinkoffAcquiring\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "stable",
+  "require-dev": {
+    "phpunit/phpunit": "^8.2"
+  }
+}
