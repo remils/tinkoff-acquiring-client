@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SergeyZatulivetrov\TinkoffAcquiring\Data;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Data\Traits\Amount;

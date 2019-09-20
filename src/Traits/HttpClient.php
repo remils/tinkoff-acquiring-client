@@ -35,21 +35,16 @@ trait HttpClient
 
         $headers['Content-Type'] = 'application/json';
 
-        $data = \json_encode($data);
+        $data = \json_encode($data, JSON_FORCE_OBJECT);
 
-        $status   = 500;
-        $response = [];
-        try {
-            $client   = new Client();
-            $res      = $client->request(
-                $this->HTTP_METHOD, $apiURL, [
-                'headers' => $headers,
-                'body'    => $data,
-            ]);
-            $status   = $res->getStatusCode();
-            $response = json_decode($res->getBody()->getContents(), true);
-        } catch (\Exception $exception) {
-        }
+        $client   = new Client();
+        $res      = $client->request(
+            $this->HTTP_METHOD, $apiURL, [
+            'headers' => $headers,
+            'body'    => $data,
+        ]);
+        $status   = $res->getStatusCode();
+        $response = json_decode($res->getBody()->getContents(), true);
 
         return [
             'status'   => $status,

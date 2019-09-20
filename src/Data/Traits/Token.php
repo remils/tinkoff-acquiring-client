@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Подпись запроса. Алгоритм формирования подписи описан в разделе
  * "Подпись запросов"
@@ -19,13 +21,23 @@ trait Token
     private $data = [];
 
     /**
-     * @param $token
+     * @param $password
      *
      * @return $this
      */
-    public function setToken($token)
+    public function setToken($password)
     {
-        $this->data['Token'] = $token;
+        $data             = $this->data;
+        unset($data['Receipt'], $data['DATA']);
+        $data['Password'] = $password;
+        ksort($data);
+
+        $token            = '';
+        foreach ($data as $value) {
+            $token .= $value;
+        }
+
+        $this->data['Token'] = hash('sha256', $token);
 
         return $this;
     }
