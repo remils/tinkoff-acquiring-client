@@ -5,6 +5,10 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Tests;
 use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\CancelData;
 use SergeyZatulivetrov\TinkoffAcquiring\ConfirmData;
+use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentMethod;
+use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentObject;
+use SergeyZatulivetrov\TinkoffAcquiring\Constants\Taxation;
+use SergeyZatulivetrov\TinkoffAcquiring\Constants\Vat;
 use SergeyZatulivetrov\TinkoffAcquiring\GetStateData;
 use SergeyZatulivetrov\TinkoffAcquiring\InitData;
 use SergeyZatulivetrov\TinkoffAcquiring\ItemData;
@@ -30,9 +34,9 @@ class TestData extends TestCase
         $item1->Price         = 10000;
         $item1->Quantity      = 1.00;
         $item1->Amount        = 10000;
-        $item1->PaymentMethod = "full prepayment";
-        $item1->PaymentObject = "commodity";
-        $item1->Tax           = "vat10";
+        $item1->PaymentMethod = PaymentMethod::full_prepayment;
+        $item1->PaymentObject = PaymentObject::commodity;
+        $item1->Tax           = Vat::vat10;
         $item1->Ean13         = "0123456789";
 
         $item2                = new ItemData();
@@ -40,22 +44,22 @@ class TestData extends TestCase
         $item2->Price         = 20000;
         $item2->Quantity      = 2.00;
         $item2->Amount        = 40000;
-        $item2->PaymentMethod = "prepayment";
-        $item2->PaymentObject = "service";
-        $item2->Tax           = "vat20";
+        $item2->PaymentMethod = PaymentMethod::prepayment;
+        $item2->PaymentObject = PaymentObject::service;
+        $item2->Tax           = Vat::vat20;
 
         $item3           = new ItemData();
         $item3->Name     = "Наименование товара 3";
         $item3->Price    = 30000;
         $item3->Quantity = 3.00;
         $item3->Amount   = 90000;
-        $item3->Tax      = "vat10";
+        $item3->Tax      = Vat::vat10;
 
         $receipt               = new ReceiptData();
         $receipt->Email        = "a@test.ru";
         $receipt->Phone        = "+79031234567";
         $receipt->EmailCompany = "b@test.ru";
-        $receipt->Taxation     = "osn";
+        $receipt->Taxation     = Taxation::osn;
         $receipt->Items        = [
             $item1->toArray(),
             $item2->toArray(),
@@ -85,7 +89,7 @@ class TestData extends TestCase
                         "Price"         => 10000,
                         "Quantity"      => 1.00,
                         "Amount"        => 10000,
-                        "PaymentMethod" => "full prepayment",
+                        "PaymentMethod" => "full_prepayment",
                         "PaymentObject" => "commodity",
                         "Tax"           => "vat10",
                         "Ean13"         => "0123456789",
