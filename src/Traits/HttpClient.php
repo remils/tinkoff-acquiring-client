@@ -35,7 +35,7 @@ trait HttpClient
 
         $headers['Content-Type'] = 'application/json';
 
-        $data = \json_encode($data, JSON_FORCE_OBJECT);
+        $data = \json_encode($data);
 
         $client   = new Client();
         $res      = $client->request(
