@@ -1,7 +1,7 @@
 {
   "name": "sergey-zatulivetrov/tinkoff-acquiring-client",
   "type": "library",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Client for working with Tinkoff's acquiring REST API",
   "keywords": [
     "tinkoff",
@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-    "php": "^7.0",
+    "php": ">=7.0",
     "ext-json": "*",
     "guzzlehttp/guzzle": ">=6.5.5"
   },
