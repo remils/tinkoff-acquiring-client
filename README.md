@@ -107,13 +107,13 @@ $client->resend($data);
 ##### 3.2.1.2 Example
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\InitData;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentMethod;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentObject;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\Taxation;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\Vat;
-use SergeyZatulivetrov\TinkoffAcquiring\ItemData;
-use SergeyZatulivetrov\TinkoffAcquiring\ReceiptData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\InitData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ItemData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ReceiptData;
 
 $data              = new InitData();
 $data->TerminalKey = "TestB";
@@ -130,9 +130,9 @@ $item1->Name          = "Наименование товара 1";
 $item1->Price         = 10000;
 $item1->Quantity      = 1.00;
 $item1->Amount        = 10000;
-$item1->PaymentMethod = PaymentMethod::full_prepayment;
-$item1->PaymentObject = PaymentObject::commodity;
-$item1->Tax           = Vat::vat10;
+$item1->PaymentMethod = PaymentMethod::FULL_PREPAYMENT;
+$item1->PaymentObject = PaymentObject::COMMODITY;
+$item1->Tax           = Vat::VAT10;
 $item1->Ean13         = "0123456789";
 
 $item2                = new ItemData();
@@ -140,28 +140,24 @@ $item2->Name          = "Наименование товара 2";
 $item2->Price         = 20000;
 $item2->Quantity      = 2.00;
 $item2->Amount        = 40000;
-$item2->PaymentMethod = PaymentMethod::prepayment;
-$item2->PaymentObject = PaymentObject::service;
-$item2->Tax           = Vat::vat20;
+$item2->PaymentMethod = PaymentMethod::PREPAYMENT;
+$item2->PaymentObject = PaymentObject::SERVICE;
+$item2->Tax           = Vat::VAT20;
 
 $item3           = new ItemData();
 $item3->Name     = "Наименование товара 3";
 $item3->Price    = 30000;
 $item3->Quantity = 3.00;
 $item3->Amount   = 90000;
-$item3->Tax      = Vat::vat10;
+$item3->Tax      = Vat::VAT10;
 
 $receipt               = new ReceiptData();
 $receipt->Email        = "a@test.ru";
 $receipt->Phone        = "+79031234567";
 $receipt->EmailCompany = "b@test.ru";
-$receipt->Taxation     = Taxation::osn;
-$receipt->Items        = [
-    $item1->toArray(),
-    $item2->toArray(),
-    $item3->toArray(),
-];
-$data->Receipt         = $receipt->toArray();
+$receipt->Taxation     = Taxation::OSN;
+$receipt->Items        = [$item1, $item2, $item3];
+$data->Receipt         = $receipt;
 ```
 
 #### 3.2.2 Confirm data
@@ -184,7 +180,7 @@ $data->Receipt         = $receipt->toArray();
 ##### 3.2.2.2 Example
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\ConfirmData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ConfirmData;
 
 $data = new ConfirmData();
 $data->TerminalKey = "TinkoffBankTest";
@@ -212,7 +208,7 @@ $data->generateToken("password");
 ##### 3.2.3.2 Example
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\CancelData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\CancelData;
 
 $data = new CancelData();
 $data->TerminalKey = "TinkoffBankTest";
@@ -239,7 +235,7 @@ $data->generateToken("password");
 ##### 3.2.4.2 Example
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\GetStateData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\GetStateData;
 
 $data = new GetStateData();
 $data->TerminalKey = "TinkoffBankTest";
@@ -263,7 +259,7 @@ $data->generateToken("password");
 ##### 3.2.5.2 Example
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\ResendData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ResendData;
 
 $data = new ResendData();
 $data->TerminalKey = "TinkoffBankTest";
