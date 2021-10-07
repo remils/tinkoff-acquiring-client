@@ -4,69 +4,62 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring;
 
-use SergeyZatulivetrov\TinkoffAcquiring\Interfaces\ClientInterface;
-use SergeyZatulivetrov\TinkoffAcquiring\Traits\HttpClient;
+use GuzzleHttp\Client as HttpClient;
+use SergeyZatulivetrov\TinkoffAcquiring\Contracts\ClientContract;
+use SergeyZatulivetrov\TinkoffAcquiring\Contracts\DataContract;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\CancelData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ConfirmData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\GetStateData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\InitData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ResendData;
 
-/**
- * Class Client
- * @package SergeyZatulivetrov\TinkoffAcquiring
- */
-class Client implements ClientInterface
+class Client implements ClientContract
 {
-    use HttpClient;
+    const API_URL = 'https://securepay.tinkoff.ru/v2/';
 
-    /**
-     * @param array $data
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function init($data = [])
+    public function init(InitData $data): array
     {
         return $this->execute('Init', $data);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function confirm($data = [])
+    public function confirm(ConfirmData $data): array
     {
         return $this->execute('Confirm', $data);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function cancel($data = [])
+    public function cancel(CancelData $data): array
     {
         return $this->execute('Cancel', $data);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getState($data = [])
+    public function getState(GetStateData $data): array
     {
         return $this->execute('GetState', $data);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function resend($data = [])
+    public function resend(ResendData $data): array
     {
         return $this->execute('Resend', $data);
+    }
+
+    public function execute(string $action, DataContract $data): array
+    {
+        $client = new HttpClient();
+
+        $response = $client->request(
+            'POST',
+            self::API_URL . $action,
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body'    => json_encode($data->toArray()),
+            ]
+        );
+
+        return [
+            'status' => $response->getStatusCode(),
+            'response' => json_decode($response->getBody()->getContents(), true),
+        ];
     }
 }

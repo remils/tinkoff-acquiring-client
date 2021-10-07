@@ -6,6 +6,6 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Constants;
 
 class PayType
 {
-    const O = "О"; // одностадийная оплата
-    const T = "T"; // двухстадийная оплата
+    const O = "О"; // Одностадийная оплата
+    const T = "T"; // Двухстадийная оплата
 }

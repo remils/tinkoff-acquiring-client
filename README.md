@@ -4,7 +4,7 @@ PHP client for Tinkoff REST API.
 
 ## 1 Requirements
 
-- PHP 7.1 or above
+- PHP 7.0 or above
 
 ## 2 Installation
 
@@ -269,6 +269,7 @@ $data = new ResendData();
 $data->TerminalKey = "TinkoffBankTest";
 $data->generateToken("password");
 ```
+
 ## 4 License
 
 Copyright (c) Zatulivetrov Sergey. Distributed under the MIT.

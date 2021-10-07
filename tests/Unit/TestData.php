@@ -1,19 +1,21 @@
 <?php
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Tests;
+declare(strict_types=1);
+
+namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use SergeyZatulivetrov\TinkoffAcquiring\CancelData;
-use SergeyZatulivetrov\TinkoffAcquiring\ConfirmData;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentMethod;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\PaymentObject;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\Taxation;
 use SergeyZatulivetrov\TinkoffAcquiring\Constants\Vat;
-use SergeyZatulivetrov\TinkoffAcquiring\GetStateData;
-use SergeyZatulivetrov\TinkoffAcquiring\InitData;
-use SergeyZatulivetrov\TinkoffAcquiring\ItemData;
-use SergeyZatulivetrov\TinkoffAcquiring\ReceiptData;
-use SergeyZatulivetrov\TinkoffAcquiring\ResendData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\CancelData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ConfirmData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\GetStateData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\InitData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ItemData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ReceiptData;
+use SergeyZatulivetrov\TinkoffAcquiring\Data\ResendData;
 
 class TestData extends TestCase
 {
@@ -34,9 +36,9 @@ class TestData extends TestCase
         $item1->Price         = 10000;
         $item1->Quantity      = 1.00;
         $item1->Amount        = 10000;
-        $item1->PaymentMethod = PaymentMethod::full_prepayment;
-        $item1->PaymentObject = PaymentObject::commodity;
-        $item1->Tax           = Vat::vat10;
+        $item1->PaymentMethod = PaymentMethod::FULL_PREPAYMENT;
+        $item1->PaymentObject = PaymentObject::COMMODITY;
+        $item1->Tax           = Vat::VAT10;
         $item1->Ean13         = "0123456789";
 
         $item2                = new ItemData();
@@ -44,28 +46,24 @@ class TestData extends TestCase
         $item2->Price         = 20000;
         $item2->Quantity      = 2.00;
         $item2->Amount        = 40000;
-        $item2->PaymentMethod = PaymentMethod::prepayment;
-        $item2->PaymentObject = PaymentObject::service;
-        $item2->Tax           = Vat::vat20;
+        $item2->PaymentMethod = PaymentMethod::PREPAYMENT;
+        $item2->PaymentObject = PaymentObject::SERVICE;
+        $item2->Tax           = Vat::VAT20;
 
         $item3           = new ItemData();
         $item3->Name     = "Наименование товара 3";
         $item3->Price    = 30000;
         $item3->Quantity = 3.00;
         $item3->Amount   = 90000;
-        $item3->Tax      = Vat::vat10;
+        $item3->Tax      = Vat::VAT10;
 
         $receipt               = new ReceiptData();
         $receipt->Email        = "a@test.ru";
         $receipt->Phone        = "+79031234567";
         $receipt->EmailCompany = "b@test.ru";
-        $receipt->Taxation     = Taxation::osn;
-        $receipt->Items        = [
-            $item1->toArray(),
-            $item2->toArray(),
-            $item3->toArray(),
-        ];
-        $data->Receipt         = $receipt->toArray();
+        $receipt->Taxation     = Taxation::OSN;
+        $receipt->Items        = [$item1, $item2, $item3];
+        $data->Receipt         = $receipt;
 
         $array = [
             "TerminalKey" => "TestB",

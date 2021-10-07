@@ -5,19 +5,16 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring;
-
-use SergeyZatulivetrov\TinkoffAcquiring\Traits\BaseDataWithToken;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Data;
 
 /**
  * Class GetStateData (Получить статус платежа)
  *
- * @property string  $TerminalKey
+ * @property string $TerminalKey
  * @property integer $PaymentId
  * @property integer $Amount
- * @property string  $IP
+ * @property string $IP
  */
-class GetStateData
+class GetStateData extends BaseDataWithToken
 {
-    use BaseDataWithToken;
 }

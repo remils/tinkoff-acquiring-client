@@ -5,16 +5,13 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring;
-
-use SergeyZatulivetrov\TinkoffAcquiring\Traits\BaseDataWithToken;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Data;
 
 /**
  * Class ResendData (Отправка недоставленных нотификаций)
  *
  * @property string $TerminalKey
  */
-class ResendData
+class ResendData extends BaseDataWithToken
 {
-    use BaseDataWithToken;
 }

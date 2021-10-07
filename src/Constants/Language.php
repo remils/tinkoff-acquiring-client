@@ -6,6 +6,6 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Constants;
 
 class Language
 {
-    const ru = "ru";
-    const en = "en";
+    const RU = "ru";
+    const EN = "en";
 }

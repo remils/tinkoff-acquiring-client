@@ -2,32 +2,24 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Traits;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Data;
 
 /**
- * Trait Token
- *
  * @property string $Token
  */
-trait BaseDataWithToken
+abstract class BaseDataWithToken extends BaseData
 {
-    use BaseData;
-
-    /**
-     * @param $password
-     */
     public function generateToken($password)
     {
         $data = $this->toArray();
 
         $data['Password'] = $password;
+
         unset($data['Receipt'], $data['DATA']);
+
         ksort($data);
 
-        $token = '';
-        foreach ($data as $value) {
-            $token .= $value;
-        }
+        $token = join('', array_values($data));
 
         $this->Token = hash('sha256', $token);
     }
