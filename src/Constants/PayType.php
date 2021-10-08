@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Constants;
 
+/**
+ * Payment type
+ */
 class PayType
 {
-    const O = "О"; // Одностадийная оплата
-    const T = "T"; // Двухстадийная оплата
+    /** Singadail payment */
+    public const O = "О";
+
+    /** Double-step payment */
+    public const T = "T";
 }

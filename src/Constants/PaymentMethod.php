@@ -4,13 +4,29 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Constants;
 
+/**
+ * Sign of payment method
+ */
 class PaymentMethod
 {
-    const FULL_PREPAYMENT = 'full_prepayment'; // Предоплата 100%
-    const PREPAYMENT      = 'prepayment';      // Предоплата
-    const ADVANCE         = 'advance';         // Аванc
-    const FULL_PAYMENT    = 'full_payment';    // Полный расчет
-    const PARTIAL_PAYMENT = 'partial_payment'; // Частичный расчет и кредит
-    const CREDIT          = 'credit';          // Передача в кредит
-    const CREDIT_PAYMENT  = 'credit_payment';  // Оплата кредита
+    /** Prepay 100% */
+    public const FULL_PREPAYMENT = 'full_prepayment';
+
+    /** Prepayment */
+    public const PREPAYMENT = 'prepayment';
+
+    /** Avanc */
+    public const ADVANCE = 'advance';
+
+    /** Full calculation */
+    public const FULL_PAYMENT = 'full_payment';
+
+    /** Partial calculation and credit */
+    public const PARTIAL_PAYMENT = 'partial_payment';
+
+    /** Transfer to Credit */
+    public const CREDIT = 'credit';
+
+    /** Payment of credit */
+    public const CREDIT_PAYMENT = 'credit_payment';
 }

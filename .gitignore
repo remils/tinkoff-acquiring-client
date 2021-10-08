@@ -1,7 +1,5 @@
 # Folders
 /vendor
-/.idea
-/.composer
 
 # Files
 composer.lock

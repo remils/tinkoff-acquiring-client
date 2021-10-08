@@ -6,13 +6,13 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Data;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Contracts\DataContract;
 
-abstract class BaseData implements DataContract
+abstract class AbstractData implements DataContract
 {
     private $data = [];
 
     public function toArray(): array
     {
-        return $this->data;
+        return $this->converter($this->data);
     }
 
     public function __set($name, $value)
@@ -30,5 +30,20 @@ abstract class BaseData implements DataContract
         if (isset($this->data[$name])) {
             unset($this->data[$name]);
         }
+    }
+
+    private function converter(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->converter($value);
+                continue;
+            }
+            if ($value instanceof DataContract) {
+                $data[$key] = $value->toArray();
+            }
+        }
+
+        return $data;
     }
 }
