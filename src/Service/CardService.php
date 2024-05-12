@@ -10,6 +10,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\CardListResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\RemoveCardResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
  * CardService
@@ -46,7 +47,7 @@ class CardService
 {
     public function __construct(
         protected readonly string $terminalKey,
-        protected readonly TokenService $tokenService,
+        protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
     }
@@ -71,12 +72,13 @@ class CardService
             $data['IP'] = $request->ip;
         }
 
-        $data['Token'] = $this->tokenService->generate($data);
-
         /**
          * @var TCardItem[] $response
          */
-        $response = $this->client->execute('GetCardList', $data);
+        $response = $this->client->execute(
+            action: 'GetCardList',
+            data: $this->signatureService->signedRequest($data),
+        );
 
         $items = [];
 
@@ -123,12 +125,13 @@ class CardService
             $data['IP'] = $request->ip;
         }
 
-        $data['Token'] = $this->tokenService->generate($data);
-
         /**
          * @var TRemoveCard $response
          */
-        $response = $this->client->execute('RemoveCard', $data);
+        $response = $this->client->execute(
+            action: 'RemoveCard',
+            data: $this->signatureService->signedRequest($data),
+        );
 
         return new RemoveCardResponse(
             terminalKey: $response['TerminalKey'],

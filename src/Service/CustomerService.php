@@ -11,6 +11,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\AddCustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\CustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\RemoveCustomerResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
  * CustomerService
@@ -48,7 +49,7 @@ class CustomerService
 {
     public function __construct(
         protected readonly string $terminalKey,
-        protected readonly TokenService $tokenService,
+        protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
     }
@@ -81,12 +82,13 @@ class CustomerService
             $data['IP'] = $request->ip;
         }
 
-        $data['Token'] = $this->tokenService->generate($data);
-
         /**
          * @var TAddCustomer $response
          */
-        $response = $this->client->execute('AddCustomer', $data);
+        $response = $this->client->execute(
+            action: 'AddCustomer',
+            data: $this->signatureService->signedRequest($data)
+        );
 
         return new AddCustomerResponse(
             terminalKey: $response['TerminalKey'],
@@ -114,12 +116,13 @@ class CustomerService
             $data['IP'] = $request->ip;
         }
 
-        $data['Token'] = $this->tokenService->generate($data);
-
         /**
          * @var TCustomer $response
          */
-        $response = $this->client->execute('GetCustomer', $data);
+        $response = $this->client->execute(
+            action: 'GetCustomer',
+            data: $this->signatureService->signedRequest($data)
+        );
 
         return new CustomerResponse(
             terminalKey: $response['TerminalKey'],
@@ -149,12 +152,13 @@ class CustomerService
             $data['IP'] = $request->ip;
         }
 
-        $data['Token'] = $this->tokenService->generate($data);
-
         /**
          * @var TRemoveCustomer $response
          */
-        $response = $this->client->execute('RemoveCustomer', $data);
+        $response = $this->client->execute(
+            action: 'RemoveCustomer',
+            data: $this->signatureService->signedRequest($data)
+        );
 
         return new RemoveCustomerResponse(
             terminalKey: $response['TerminalKey'],
