@@ -19,15 +19,15 @@ use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\RemoveCardResponse;
  *      Pan: string,
  *      Status: string,
  *      CardType: int,
- *      RebillId: string,
- *      ExpDate: string
+ *      RebillId: string|null,
+ *      ExpDate: string|null
  * }
  *
  * @phpstan-type TCardListError array{
- *      Success: bool,
- *      ErrorCode: string,
- *      Message: string,
- *      Details: string
+ *      Success: bool|null,
+ *      ErrorCode: string|null,
+ *      Message: string|null,
+ *      Details: string|null
  * }
  *
  * @phpstan-type TRemoveCard array{
@@ -38,8 +38,8 @@ use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\RemoveCardResponse;
  *      CardType: int,
  *      Success: bool,
  *      ErrorCode: string,
- *      Message: string,
- *      Details: string
+ *      Message: string|null,
+ *      Details: string|null
  * }
  */
 class CardService
@@ -74,7 +74,7 @@ class CardService
         $data['Token'] = $this->tokenService->generate($data);
 
         /**
-         * @var TCardItem[]|TCardListError $response
+         * @var TCardItem[] $response
          */
         $response = $this->client->execute('GetCardList', $data);
 
@@ -92,6 +92,10 @@ class CardService
                 );
             }
         }
+
+        /**
+         * @var TCardListError $response
+         */
 
         return new CardListResponse(
             items: $items,

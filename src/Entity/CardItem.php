@@ -20,8 +20,8 @@ class CardItem
      * - карта списания (0);
      * - карта пополнения (1);
      * - карта пополнения и списания (2).
-     * @param mixed $rebillId Идентификатор рекуррентного платежа
-     * @param mixed $expDate Срок действия карты
+     * @param string|null $rebillId Идентификатор рекуррентного платежа
+     * @param string|null $expDate Срок действия карты
      */
     public function __construct(
         public readonly string $cardId,

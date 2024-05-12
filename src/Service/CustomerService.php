@@ -20,8 +20,8 @@ use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\RemoveCustomerResponse
  *      CustomerKey: string,
  *      ErrorCode: string,
  *      Success: bool,
- *      Message: string,
- *      Details: string
+ *      Message: string|null,
+ *      Details: string|null
  * }
  *
  * @phpstan-type TCustomer array{
@@ -29,10 +29,10 @@ use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\RemoveCustomerResponse
  *      CustomerKey: string,
  *      ErrorCode: string,
  *      Success: bool,
- *      Message: string,
- *      Details: string,
- *      Email: string,
- *      Phone: string
+ *      Message: string|null,
+ *      Details: string|null,
+ *      Email: string|null,
+ *      Phone: string|null
  * }
  *
  * @phpstan-type TRemoveCustomer array{
@@ -40,8 +40,8 @@ use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\RemoveCustomerResponse
  *      CustomerKey: string,
  *      ErrorCode: string,
  *      Success: bool,
- *      Message: string,
- *      Details: string
+ *      Message: string|null,
+ *      Details: string|null
  * }
  */
 class CustomerService
