@@ -14,7 +14,7 @@ class CertificateService implements SignatureServiceInterface
     /**
      * @param string $serialNumber Серийный номер сертификата
      * @param string $privateKey Значение приватного ключа
-     * @param array $excludedProperties Свойства запроса, которые будут исключены при генерации подписи
+     * @param string[] $excludedProperties Свойства запроса, которые будут исключены при генерации подписи
      */
     public function __construct(
         protected readonly string $serialNumber,
