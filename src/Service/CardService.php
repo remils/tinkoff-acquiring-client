@@ -8,6 +8,9 @@ use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\AddCardResponseFactory;
 use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\CardListResponseFactory;
 use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\RemoveCardResponseFactory;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\AddCardRequestMapper;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\CardListRequestMapper;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\RemoveCardRequestMapper;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
@@ -21,11 +24,20 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  */
 class CardService
 {
+    protected readonly AddCardRequestMapper $addCardRequestMapper;
+
+    protected readonly CardListRequestMapper $cardListRequestMapper;
+
+    protected readonly RemoveCardRequestMapper $removeCardRequestMapper;
+
     public function __construct(
         protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
+        $this->addCardRequestMapper = new AddCardRequestMapper($terminalKey);
+        $this->cardListRequestMapper = new CardListRequestMapper($terminalKey);
+        $this->removeCardRequestMapper = new RemoveCardRequestMapper($terminalKey);
     }
 
     /**
@@ -36,22 +48,7 @@ class CardService
      */
     public function addCard(AddCardRequest $request): AddCardResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-        ];
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
-
-        if (null !== $request->checkType) {
-            $data['CheckType'] = $request->checkType->value;
-        }
-
-        if (null !== $request->residentState) {
-            $data['ResidentState'] = $request->residentState;
-        }
+        $data = $this->addCardRequestMapper->item($request);
 
         $response = $this->client->execute(
             action: 'AddCard',
@@ -69,18 +66,7 @@ class CardService
      */
     public function cardList(CardListRequest $request): CardListResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-        ];
-
-        if (null !== $request->savedCard) {
-            $data['SavedCard'] = $request->savedCard;
-        }
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
+        $data = $this->cardListRequestMapper->item($request);
 
         $response = $this->client->execute(
             action: 'GetCardList',
@@ -101,15 +87,7 @@ class CardService
      */
     public function removeCard(RemoveCardRequest $request): RemoveCardResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-            'CardId' => $request->cardId,
-        ];
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
+        $data = $this->removeCardRequestMapper->item($request);
 
         $response = $this->client->execute(
             action: 'RemoveCard',
