@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Customer\AddCustomerRequestMapper;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Customer\CustomerRequestMapper;
+use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Customer\RemoveCustomerRequestMapper;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\AddCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
@@ -47,11 +50,20 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  */
 class CustomerService
 {
+    protected readonly AddCustomerRequestMapper $addCustomerRequestMapper;
+
+    protected readonly CustomerRequestMapper $customerRequestMapper;
+
+    protected readonly RemoveCustomerRequestMapper $removeCustomerRequestMapper;
+
     public function __construct(
         protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
+        $this->addCustomerRequestMapper = new AddCustomerRequestMapper($terminalKey);
+        $this->customerRequestMapper = new CustomerRequestMapper($terminalKey);
+        $this->removeCustomerRequestMapper = new RemoveCustomerRequestMapper($terminalKey);
     }
 
     /**
@@ -65,22 +77,7 @@ class CustomerService
      */
     public function addCustomer(AddCustomerRequest $request): AddCustomerResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-        ];
-
-        if (null !== $request->email) {
-            $data['Email'] = $request->email;
-        }
-
-        if (null !== $request->phone) {
-            $data['Phone'] = $request->phone;
-        }
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
+        $data = $this->addCustomerRequestMapper->item($request);
 
         /**
          * @var TAddCustomer $response
@@ -107,14 +104,7 @@ class CustomerService
      */
     public function customer(CustomerRequest $request): CustomerResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-        ];
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
+        $data = $this->customerRequestMapper->item($request);
 
         /**
          * @var TCustomer $response
@@ -143,14 +133,7 @@ class CustomerService
      */
     public function removeCustomer(RemoveCustomerRequest $request): RemoveCustomerResponse
     {
-        $data = [
-            'TerminalKey' => $this->terminalKey,
-            'CustomerKey' => $request->customerKey,
-        ];
-
-        if (null !== $request->ip) {
-            $data['IP'] = $request->ip;
-        }
+        $data = $this->removeCustomerRequestMapper->item($request);
 
         /**
          * @var TRemoveCustomer $response
