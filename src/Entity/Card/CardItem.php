@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Entity;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Card;
 
 /**
  * CardItem

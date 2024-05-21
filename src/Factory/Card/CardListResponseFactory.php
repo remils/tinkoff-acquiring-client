@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Factory\Card;
 
-use SergeyZatulivetrov\TinkoffAcquiring\Entity\CardItem;
+use SergeyZatulivetrov\TinkoffAcquiring\Entity\Card\CardItem;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\CardListResponse;
 
 /**
