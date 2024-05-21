@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
-use SergeyZatulivetrov\TinkoffAcquiring\Entity\CardItem;
+use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\AddCardResponseFactory;
+use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\CardListResponseFactory;
+use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\RemoveCardResponseFactory;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
@@ -16,46 +18,6 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 /**
  * CardService
- *
- * @phpstan-type TCardItem array{
- *      CardId: string,
- *      Pan: string,
- *      Status: string,
- *      CardType: int,
- *      RebillId: string|null,
- *      ExpDate: string|null
- * }
- *
- * @phpstan-type TCardListError array{
- *      Success: bool|null,
- *      ErrorCode: string|null,
- *      Message: string|null,
- *      Details: string|null
- * }
- *
- * @phpstan-type TRemoveCard array{
- *      TerminalKey: string,
- *      Status: string,
- *      CustomerKey: string,
- *      CardId: string,
- *      CardType: int,
- *      Success: bool,
- *      ErrorCode: string,
- *      Message: string|null,
- *      Details: string|null
- * }
- *
- * @phpstan-type TAddCard array{
- *      TerminalKey: string,
- *      CustomerKey: string,
- *      RequestKey: string,
- *      PaymentURL: string,
- *      PaymentId: int|null,
- *      Success: bool,
- *      ErrorCode: string,
- *      Message: string|null,
- *      Details: string|null
- * }
  */
 class CardService
 {
@@ -91,25 +53,12 @@ class CardService
             $data['ResidentState'] = $request->residentState;
         }
 
-        /**
-         * @var TAddCard $response
-         */
         $response = $this->client->execute(
             action: 'AddCard',
             data: $this->signatureService->signedRequest($data),
         );
 
-        return new AddCardResponse(
-            terminalKey: $response['TerminalKey'],
-            customerKey: $response['CustomerKey'],
-            requestKey: $response['RequestKey'],
-            paymentUrl: $response['PaymentURL'],
-            paymentId: $response['PaymentId'] ?? null,
-            success: $response['Success'],
-            errorCode: $response['ErrorCode'],
-            message: $response['Message'] ?? null,
-            details: $response['Details'] ?? null,
-        );
+        return AddCardResponseFactory::fromArray($response);
     }
 
 
@@ -133,40 +82,16 @@ class CardService
             $data['IP'] = $request->ip;
         }
 
-        /**
-         * @var TCardItem[] $response
-         */
         $response = $this->client->execute(
             action: 'GetCardList',
             data: $this->signatureService->signedRequest($data),
         );
 
-        $items = [];
-
         if (array_is_list($response)) {
-            foreach ($response as $item) {
-                $items[] = new CardItem(
-                    cardId: $item['CardId'],
-                    pan: $item['Pan'],
-                    status: $item['Status'],
-                    cardType: $item['CardType'],
-                    rebillId: $item['RebillId'] ?? null,
-                    expDate: $item['ExpDate'] ?? null,
-                );
-            }
+            return CardListResponseFactory::fromArray($response);
         }
 
-        /**
-         * @var TCardListError $response
-         */
-
-        return new CardListResponse(
-            items: $items,
-            success: $response['Success'] ?? true,
-            errorCode: $response['ErrorCode'] ?? '0',
-            message: $response['Message'] ?? null,
-            details: $response['Details'] ?? null,
-        );
+        return CardListResponseFactory::failFromArray($response);
     }
 
     /**
@@ -186,24 +111,11 @@ class CardService
             $data['IP'] = $request->ip;
         }
 
-        /**
-         * @var TRemoveCard $response
-         */
         $response = $this->client->execute(
             action: 'RemoveCard',
             data: $this->signatureService->signedRequest($data),
         );
 
-        return new RemoveCardResponse(
-            terminalKey: $response['TerminalKey'],
-            status: $response['Status'],
-            customerKey: $response['CustomerKey'],
-            cardId: $response['CardId'],
-            cardType: $response['CardType'],
-            success: $response['Success'],
-            errorCode: $response['ErrorCode'],
-            message: $response['Message'] ?? null,
-            details: $response['Details'] ?? null,
-        );
+        return RemoveCardResponseFactory::fromArray($response);
     }
 }
