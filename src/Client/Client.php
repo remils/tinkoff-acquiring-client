@@ -33,7 +33,7 @@ class Client implements ClientInterface
      * @inheritDoc
      * @throws HttpException
      */
-    public function execute(string $action, array $data): mixed
+    public function execute(string $action, $data): mixed
     {
         $curl = curl_init();
 

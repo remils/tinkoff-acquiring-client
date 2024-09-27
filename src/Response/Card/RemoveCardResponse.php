@@ -6,6 +6,18 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Card;
 
 /**
  * RemoveCardResponse
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      Status: string,
+ *      CustomerKey: string,
+ *      CardId: string,
+ *      CardType: int,
+ *      Success: bool,
+ *      ErrorCode: string,
+ *      Message: string|null,
+ *      Details: string|null
+ * }
  */
 class RemoveCardResponse
 {
@@ -34,5 +46,24 @@ class RemoveCardResponse
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return RemoveCardResponse
+     */
+    public static function fromArray(array $data): static
+    {
+        return new static(
+            terminalKey: $data['TerminalKey'],
+            status: $data['Status'],
+            customerKey: $data['CustomerKey'],
+            cardId: $data['CardId'],
+            cardType: $data['CardType'],
+            success: $data['Success'],
+            errorCode: $data['ErrorCode'],
+            message: $data['Message'] ?? null,
+            details: $data['Details'] ?? null,
+        );
     }
 }

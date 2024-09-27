@@ -5,11 +5,23 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Request\Card;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CheckTypeEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\RequestInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
  * AddCardRequest
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      CustomerKey: string,
+ *      IP: string|null,
+ *      CheckType: string|null,
+ *      ResidentState: bool|null
+ * }
+ *
+ * @implements RequestInterface<T>
  */
-class AddCardRequest
+class AddCardRequest implements RequestInterface
 {
     /**
      * @param string $customerKey Идентификатор клиента в системе Мерчанта
@@ -36,5 +48,35 @@ class AddCardRequest
         public readonly ?bool $residentState = null,
         public readonly ?string $ip = null,
     ) {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function build(
+        string $terminalKey,
+        SignatureServiceInterface $signatureService,
+    ) {
+        /**
+         * @var T $data
+         */
+        $data = [
+            'TerminalKey' => $terminalKey,
+            'CustomerKey' => $this->customerKey,
+        ];
+
+        if (null !== $this->ip) {
+            $data['IP'] = $this->ip;
+        }
+
+        if (null !== $this->checkType) {
+            $data['CheckType'] = $this->checkType->value;
+        }
+
+        if (null !== $this->residentState) {
+            $data['ResidentState'] = $this->residentState;
+        }
+
+        return $signatureService->signedRequest($data);
     }
 }

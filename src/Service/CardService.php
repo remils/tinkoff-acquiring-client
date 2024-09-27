@@ -5,12 +5,6 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
-use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\AddCardResponseFactory;
-use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\CardListResponseFactory;
-use SergeyZatulivetrov\TinkoffAcquiring\Factory\Card\RemoveCardResponseFactory;
-use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\AddCardRequestMapper;
-use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\CardListRequestMapper;
-use SergeyZatulivetrov\TinkoffAcquiring\Mapper\Card\RemoveCardRequestMapper;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
@@ -24,20 +18,11 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  */
 class CardService
 {
-    protected readonly AddCardRequestMapper $addCardRequestMapper;
-
-    protected readonly CardListRequestMapper $cardListRequestMapper;
-
-    protected readonly RemoveCardRequestMapper $removeCardRequestMapper;
-
     public function __construct(
         protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
-        $this->addCardRequestMapper = new AddCardRequestMapper($terminalKey);
-        $this->cardListRequestMapper = new CardListRequestMapper($terminalKey);
-        $this->removeCardRequestMapper = new RemoveCardRequestMapper($terminalKey);
     }
 
     /**
@@ -48,14 +33,12 @@ class CardService
      */
     public function addCard(AddCardRequest $request): AddCardResponse
     {
-        $data = $this->addCardRequestMapper->item($request);
-
         $response = $this->client->execute(
             action: 'AddCard',
-            data: $this->signatureService->signedRequest($data),
+            data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return AddCardResponseFactory::fromArray($response);
+        return AddCardResponse::fromArray($response);
     }
 
 
@@ -66,18 +49,16 @@ class CardService
      */
     public function cardList(CardListRequest $request): CardListResponse
     {
-        $data = $this->cardListRequestMapper->item($request);
-
         $response = $this->client->execute(
             action: 'GetCardList',
-            data: $this->signatureService->signedRequest($data),
+            data: $request->build($this->terminalKey, $this->signatureService),
         );
 
         if (array_is_list($response)) {
-            return CardListResponseFactory::fromArray($response);
+            return CardListResponse::listFromArray($response);
         }
 
-        return CardListResponseFactory::failFromArray($response);
+        return CardListResponse::failFromArray($response);
     }
 
     /**
@@ -87,13 +68,11 @@ class CardService
      */
     public function removeCard(RemoveCardRequest $request): RemoveCardResponse
     {
-        $data = $this->removeCardRequestMapper->item($request);
-
         $response = $this->client->execute(
             action: 'RemoveCard',
-            data: $this->signatureService->signedRequest($data),
+            data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return RemoveCardResponseFactory::fromArray($response);
+        return RemoveCardResponse::fromArray($response);
     }
 }

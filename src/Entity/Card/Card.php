@@ -6,8 +6,17 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Card;
 
 /**
  * CardItem
+ *
+ * @phpstan-type T array{
+ *      CardId: string,
+ *      Pan: string,
+ *      Status: string,
+ *      CardType: int,
+ *      RebillId: string|null,
+ *      ExpDate: string|null
+ * }
  */
-class CardItem
+class Card
 {
     /**
      * @param string $cardId Идентификатор карты в системе Тинькофф Кассы
@@ -31,5 +40,21 @@ class CardItem
         public readonly ?string $rebillId = null,
         public readonly ?string $expDate = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return Card
+     */
+    public static function fromArray($data): static
+    {
+        return new static(
+            cardId: $data['CardId'],
+            pan: $data['Pan'],
+            status: $data['Status'],
+            cardType: $data['CardType'],
+            rebillId: $data['RebillId'] ?? null,
+            expDate: $data['ExpDate'] ?? null,
+        );
     }
 }

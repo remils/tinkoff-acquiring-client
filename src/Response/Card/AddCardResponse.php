@@ -6,6 +6,18 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Card;
 
 /**
  * AddCardResponse
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      CustomerKey: string,
+ *      RequestKey: string,
+ *      PaymentURL: string,
+ *      PaymentId: int|null,
+ *      Success: bool,
+ *      ErrorCode: string,
+ *      Message: string|null,
+ *      Details: string|null
+ * }
  */
 class AddCardResponse
 {
@@ -32,5 +44,24 @@ class AddCardResponse
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return AddCardResponse
+     */
+    public static function fromArray(array $data): static
+    {
+        return new static(
+            terminalKey: $data['TerminalKey'],
+            customerKey: $data['CustomerKey'],
+            requestKey: $data['RequestKey'],
+            paymentUrl: $data['PaymentURL'],
+            paymentId: $data['PaymentId'] ?? null,
+            success: $data['Success'],
+            errorCode: $data['ErrorCode'],
+            message: $data['Message'] ?? null,
+            details: $data['Details'] ?? null,
+        );
     }
 }
