@@ -6,6 +6,15 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Customer;
 
 /**
  * AddCustomerResponse
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      CustomerKey: string,
+ *      ErrorCode: string,
+ *      Success: bool,
+ *      Message: string|null,
+ *      Details: string|null
+ * }
  */
 class AddCustomerResponse
 {
@@ -25,5 +34,21 @@ class AddCustomerResponse
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return AddCustomerResponse
+     */
+    public static function fromArray(array $data): static
+    {
+        return new static(
+            terminalKey: $data['TerminalKey'],
+            customerKey: $data['CustomerKey'],
+            success: $data['Success'],
+            errorCode: $data['ErrorCode'],
+            message: $data['Message'] ?? null,
+            details: $data['Details'] ?? null,
+        );
     }
 }
