@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Card;
 
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
+
 /**
  * CardItem
  *
@@ -21,22 +24,16 @@ class Card
     /**
      * @param string $cardId Идентификатор карты в системе Тинькофф Кассы
      * @param string $pan Номер карты
-     * @param string $status Статус карты:
-     * - A – активная,
-     * - I – не активная,
-     * - D - удаленная.
-     * @param int $cardType Тип карты:
-     * - карта списания (0);
-     * - карта пополнения (1);
-     * - карта пополнения и списания (2).
+     * @param CardStatusEnum $status Статус карты
+     * @param CardTypeEnum $cardType Тип карты
      * @param string|null $rebillId Идентификатор рекуррентного платежа
      * @param string|null $expDate Срок действия карты
      */
     public function __construct(
         public readonly string $cardId,
         public readonly string $pan,
-        public readonly string $status,
-        public readonly int $cardType,
+        public readonly CardStatusEnum $status,
+        public readonly CardTypeEnum $cardType,
         public readonly ?string $rebillId = null,
         public readonly ?string $expDate = null,
     ) {
@@ -51,8 +48,8 @@ class Card
         return new static(
             cardId: $data['CardId'],
             pan: $data['Pan'],
-            status: $data['Status'],
-            cardType: $data['CardType'],
+            status: CardStatusEnum::from($data['Status']),
+            cardType: CardTypeEnum::from($data['CardType']),
             rebillId: $data['RebillId'] ?? null,
             expDate: $data['ExpDate'] ?? null,
         );
