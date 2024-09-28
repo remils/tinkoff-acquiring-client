@@ -9,6 +9,6 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum PayTypeEnum: string
 {
-    case O = "О";
-    case T = "T";
+    case OneStep = "О";
+    case TwoStep = "T";
 }

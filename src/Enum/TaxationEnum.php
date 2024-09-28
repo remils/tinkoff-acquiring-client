@@ -9,10 +9,10 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum TaxationEnum: string
 {
-    case OSN = 'osn';
-    case USN_INCOME = 'usn_income';
-    case USN_INCOME_OUTCOME = 'usn_income_outcome';
-    case PATENT = 'patent';
-    case ENVD = 'envd';
-    case ESN = 'esn';
+    case Osn = 'osn';
+    case UsnIncome = 'usn_income';
+    case UsnIncomeOutcome = 'usn_income_outcome';
+    case Patent = 'patent';
+    case Envd = 'envd';
+    case Esn = 'esn';
 }

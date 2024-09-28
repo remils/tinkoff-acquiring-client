@@ -9,11 +9,11 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum PaymentMethodEnum: string
 {
-    case FULL_PREPAYMENT = 'full_prepayment';
-    case PREPAYMENT = 'prepayment';
-    case ADVANCE = 'advance';
-    case FULL_PAYMENT = 'full_payment';
-    case PARTIAL_PAYMENT = 'partial_payment';
-    case CREDIT = 'credit';
-    case CREDIT_PAYMENT = 'credit_payment';
+    case FullPrepayment = 'full_prepayment';
+    case Prepayment = 'prepayment';
+    case Advance = 'advance';
+    case FullPayment = 'full_payment';
+    case PartialPayment = 'partial_payment';
+    case Credit = 'credit';
+    case CreditPayment = 'credit_payment';
 }

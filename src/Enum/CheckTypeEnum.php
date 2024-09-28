@@ -9,8 +9,8 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum CheckTypeEnum: string
 {
-    case NO = 'NO';
-    case HOLD = 'HOLD';
-    case SECURE = '3DS';
-    case SECURE_HOLD = '3DSHOLD';
+    case No = 'NO';
+    case Hold = 'HOLD';
+    case Secure = '3DS';
+    case SecureHold = '3DSHOLD';
 }

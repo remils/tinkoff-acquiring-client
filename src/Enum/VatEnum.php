@@ -9,10 +9,10 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum VatEnum: string
 {
-    case NONE = 'none';
-    case VAT0 = 'vat0';
-    case VAT10 = 'vat10';
-    case VAT20 = 'vat20';
-    case VAT110 = 'vat110';
-    case VAT120 = 'vat120';
+    case None = 'none';
+    case Vat0 = 'vat0';
+    case Vat10 = 'vat10';
+    case Vat20 = 'vat20';
+    case Vat110 = 'vat110';
+    case Vat120 = 'vat120';
 }

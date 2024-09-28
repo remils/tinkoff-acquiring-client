@@ -9,17 +9,17 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum PaymentObjectEnum: string
 {
-    case COMMODITY = 'commodity';
-    case EXCISE = 'excise';
-    case JOB = 'job';
-    case SERVICE = 'service';
-    case GAMBLING_BET = 'gambling_bet';
-    case GAMBLING_PRIZE = 'gambling_prize';
-    case LOTTERY = 'lottery';
-    case LOTTERY_PRIZE = 'lottery_prize';
-    case INTELLECTUAL_ACTIVITY = 'intellectual_activity';
-    case PAYMENT = 'payment';
-    case AGENT_COMMISSION = 'agent_commission';
-    case COMPOSITE = 'composite';
-    case ANOTHER = 'another';
+    case Commodity = 'commodity';
+    case Excise = 'excise';
+    case Job = 'job';
+    case Service = 'service';
+    case GamblingBet = 'gambling_bet';
+    case GamblingPrize = 'gambling_prize';
+    case Lottery = 'lottery';
+    case LotteryPrize = 'lottery_prize';
+    case IntellectualActivity = 'intellectual_activity';
+    case Payment = 'payment';
+    case AgentCommission = 'agent_commission';
+    case Composite = 'composite';
+    case Another = 'another';
 }

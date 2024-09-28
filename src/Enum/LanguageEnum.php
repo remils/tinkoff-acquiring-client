@@ -9,6 +9,6 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Enum;
  */
 enum LanguageEnum: string
 {
-    case RU = "ru";
-    case EN = "en";
+    case Russia = "ru";
+    case English = "en";
 }
