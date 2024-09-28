@@ -15,9 +15,16 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 /**
  * CustomerService
+ *
+ * @template TSignatureData of array<string,string>
  */
 class CustomerService
 {
+    /**
+     * @param string $terminalKey
+     * @param SignatureServiceInterface<TSignatureData> $signatureService
+     * @param ClientInterface $client
+     */
     public function __construct(
         protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
@@ -31,7 +38,7 @@ class CustomerService
      * при передаче параметра CustomerKey в методе Init. Это можно использовать для сохранения
      * и последующего отображения клиенту замаскированного номера карты, по которой будет
      * совершен рекуррентный платеж
-     * @param AddCustomerRequest $request
+     * @param AddCustomerRequest<TSignatureData> $request
      * @return AddCustomerResponse
      */
     public function addCustomer(AddCustomerRequest $request): AddCustomerResponse
@@ -46,7 +53,7 @@ class CustomerService
 
     /**
      * Возвращает данные клиента, сохраненные в связке с терминалом
-     * @param CustomerRequest $request
+     * @param CustomerRequest<TSignatureData> $request
      * @return CustomerResponse
      */
     public function customer(CustomerRequest $request): CustomerResponse
@@ -61,7 +68,7 @@ class CustomerService
 
     /**
      * Удаляет сохраненные данные клиента
-     * @param RemoveCustomerRequest $request
+     * @param RemoveCustomerRequest<TSignatureData> $request
      * @return RemoveCustomerResponse
      */
     public function removeCustomer(RemoveCustomerRequest $request): RemoveCustomerResponse

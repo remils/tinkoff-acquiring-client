@@ -8,6 +8,12 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 /**
  * TokenService
+ *
+ * @phpstan-type TSignatureData array{
+ *      Token: string
+ * }
+ *
+ * @implements SignatureServiceInterface<TSignatureData>
  */
 class TokenService implements SignatureServiceInterface
 {
@@ -29,14 +35,22 @@ class TokenService implements SignatureServiceInterface
      */
     public function signedRequest(array $data): array
     {
-        $data['Token'] = $this->getToken($data);
+        /**
+         * @var TSignatureData $signatureData
+         */
+        $signatureData = [
+            'Token' => $this->getToken($data),
+        ];
 
-        return $data;
+        return array_merge($signatureData, $data);
     }
 
     /**
      * Генерация токена
-     * @param array<string,mixed> $data
+     *
+     * @template TData of array<string,mixed>
+     *
+     * @param TData $data
      * @return string
      */
     protected function getToken(array $data): string

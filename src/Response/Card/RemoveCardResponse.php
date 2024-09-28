@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Card;
 
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
+
 /**
  * RemoveCardResponse
  *
@@ -23,13 +26,10 @@ class RemoveCardResponse
 {
     /**
      * @param string $terminalKey Идентификатор терминала. Выдается Мерчанту Тинькофф Кассой при заведении терминала.
-     * @param string $status Статус карты: D – удалена
+     * @param CardStatusEnum $status Статус карты
      * @param string $customerKey Идентификатор клиента в системе Мерчанта
      * @param string $cardId Идентификатор карты в системе Тинькофф Кассы
-     * @param int $cardType Тип карты:
-     * - карта списания (0);
-     * - карта пополнения(1);
-     * - карта пополнения и списания (2).
+     * @param CardTypeEnum $cardType Тип карты
      * @param bool $success Успешность прохождения запроса (true/false)
      * @param string $errorCode Код ошибки. «0» в случае успеха
      * @param string|null $message Краткое описание ошибки
@@ -37,10 +37,10 @@ class RemoveCardResponse
      */
     public function __construct(
         public readonly string $terminalKey,
-        public readonly string $status,
+        public readonly CardStatusEnum $status,
         public readonly string $customerKey,
         public readonly string $cardId,
-        public readonly int $cardType,
+        public readonly CardTypeEnum $cardType,
         public readonly bool $success,
         public readonly string $errorCode,
         public readonly ?string $message = null,
@@ -52,14 +52,14 @@ class RemoveCardResponse
      * @param T $data
      * @return RemoveCardResponse
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(array $data): RemoveCardResponse
     {
-        return new static(
+        return new RemoveCardResponse(
             terminalKey: $data['TerminalKey'],
-            status: $data['Status'],
+            status: CardStatusEnum::from($data['Status']),
             customerKey: $data['CustomerKey'],
             cardId: $data['CardId'],
-            cardType: $data['CardType'],
+            cardType: CardTypeEnum::from($data['CardType']),
             success: $data['Success'],
             errorCode: $data['ErrorCode'],
             message: $data['Message'] ?? null,

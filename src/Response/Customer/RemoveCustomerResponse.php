@@ -40,9 +40,9 @@ class RemoveCustomerResponse
      * @param T $data
      * @return RemoveCustomerResponse
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(array $data): RemoveCustomerResponse
     {
-        return new static(
+        return new RemoveCustomerResponse(
             terminalKey: $data['TerminalKey'],
             customerKey: $data['CustomerKey'],
             success: $data['Success'],

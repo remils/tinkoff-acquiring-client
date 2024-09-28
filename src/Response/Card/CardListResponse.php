@@ -40,9 +40,9 @@ class CardListResponse
      * @param TCard[] $data
      * @return CardListResponse
      */
-    public static function listFromArray(array $data): static
+    public static function listFromArray(array $data): CardListResponse
     {
-        return new static(
+        return new CardListResponse(
             items: array_map(Card::fromArray(...), $data),
             success: true,
             errorCode: '0',
@@ -55,9 +55,9 @@ class CardListResponse
      * @param T $data
      * @return CardListResponse
      */
-    public static function failFromArray(array $data): static
+    public static function failFromArray(array $data): CardListResponse
     {
-        return new static(
+        return new CardListResponse(
             items: [],
             success: $data['Success'],
             errorCode: $data['ErrorCode'],

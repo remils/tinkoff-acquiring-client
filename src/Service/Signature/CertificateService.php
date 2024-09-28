@@ -8,6 +8,14 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 /**
  * CertificateService
+ *
+ * @phpstan-type TSignatureData array{
+ *      X509SerialNumber: string,
+ *      DigestValue: string,
+ *      SignatureValue: string
+ * }
+ *
+ * @implements SignatureServiceInterface<TSignatureData>
  */
 class CertificateService implements SignatureServiceInterface
 {
@@ -35,11 +43,16 @@ class CertificateService implements SignatureServiceInterface
     {
         $hashBinary = $this->getHashBinary($data);
 
-        $data['X509SerialNumber'] = $this->serialNumber;
-        $data['DigestValue'] = base64_encode($hashBinary);
-        $data['SignatureValue'] = base64_encode($this->signPrivateKey($hashBinary));
+        /**
+         * @var TSignatureData $signatureData
+         */
+        $signatureData = [
+            'X509SerialNumber' => $this->serialNumber,
+            'DigestValue' => base64_encode($hashBinary),
+            'SignatureValue' => base64_encode($this->signPrivateKey($hashBinary)),
+        ];
 
-        return $data;
+        return array_merge($signatureData, $data);
     }
 
     /**
@@ -61,7 +74,10 @@ class CertificateService implements SignatureServiceInterface
 
     /**
      * Вычислить хэш-сумму по алгоритму SHA256 и получить результат в бинарном виде
-     * @param array<string,mixed> $data
+     *
+     * @template TData of array<string,mixed>
+     *
+     * @param TData $data
      * @return string
      */
     protected function getHashBinary(array $data): string

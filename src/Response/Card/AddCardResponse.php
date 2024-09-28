@@ -50,9 +50,9 @@ class AddCardResponse
      * @param T $data
      * @return AddCardResponse
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(array $data): AddCardResponse
     {
-        return new static(
+        return new AddCardResponse(
             terminalKey: $data['TerminalKey'],
             customerKey: $data['CustomerKey'],
             requestKey: $data['RequestKey'],

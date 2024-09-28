@@ -11,8 +11,11 @@ interface ClientInterface
 {
     /**
      * Метод должен выполнять POST запрос
+     *
+     * @template TData of array<string,mixed>
+     *
      * @param string $action
-     * @param array<string,mixed> $data
+     * @param TData $data
      * @return mixed
      */
     public function execute(string $action, $data): mixed;

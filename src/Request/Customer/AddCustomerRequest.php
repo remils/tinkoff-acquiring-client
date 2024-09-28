@@ -10,7 +10,9 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * AddCustomerRequest
  *
- * @phpstan-type T array{
+ * @template TSignatureData of array<string,string>
+ *
+ * @phpstan-type TData array{
  *      TerminalKey: string,
  *      CustomerKey: string,
  *      Email: string|null,
@@ -18,7 +20,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  *      IP: string|null
  * }
  *
- * @implements RequestInterface<T>
+ * @implements RequestInterface<TData,TSignatureData>
  */
 class AddCustomerRequest implements RequestInterface
 {
@@ -42,7 +44,7 @@ class AddCustomerRequest implements RequestInterface
     public function build(string $terminalKey, SignatureServiceInterface $signatureService)
     {
         /**
-         * @var T $data
+         * @var TData $data
          */
         $data = [
             'TerminalKey' => $terminalKey,

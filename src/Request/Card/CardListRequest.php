@@ -10,14 +10,16 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * CardListRequest
  *
- * @phpstan-type T array{
+ * @template TSignatureData of array<string,string>
+ *
+ * @phpstan-type TData array{
  *      TerminalKey: string,
  *      CustomerKey: string,
  *      IP: string|null,
  *      SavedCard: bool|null
  * }
  *
- * @implements RequestInterface<T>
+ * @implements RequestInterface<TData,TSignatureData>
  */
 class CardListRequest implements RequestInterface
 {
@@ -39,7 +41,7 @@ class CardListRequest implements RequestInterface
     public function build(string $terminalKey, SignatureServiceInterface $signatureService)
     {
         /**
-         * @var T $data
+         * @var TData $data
          */
         $data = [
             'TerminalKey' => $terminalKey,

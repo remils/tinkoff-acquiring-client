@@ -6,6 +6,18 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Payment;
 
 /**
  * StateResponse
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      OrderId: string,
+ *      PaymentId: string,
+ *      Status: string,
+ *      Success: bool,
+ *      ErrorCode: string,
+ *      Amount: int|null,
+ *      Message: string|null,
+ *      Details: string|null
+ * }
  */
 class StateResponse
 {
@@ -31,5 +43,24 @@ class StateResponse
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return StateResponse
+     */
+    public static function fromArray(array $data): StateResponse
+    {
+        return new StateResponse(
+            terminalKey: $data['TerminalKey'],
+            orderId: $data['OrderId'],
+            paymentId: $data['PaymentId'],
+            status: $data['Status'],
+            success: $data['Success'],
+            errorCode: $data['ErrorCode'],
+            amount: $data['Amount'] ?? null,
+            message: $data['Message'] ?? null,
+            details: $data['Details'] ?? null
+        );
     }
 }

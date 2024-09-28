@@ -8,7 +8,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
 
 /**
- * CardItem
+ * Card
  *
  * @phpstan-type T array{
  *      CardId: string,
@@ -43,9 +43,9 @@ class Card
      * @param T $data
      * @return Card
      */
-    public static function fromArray($data): static
+    public static function fromArray($data): Card
     {
-        return new static(
+        return new Card(
             cardId: $data['CardId'],
             pan: $data['Pan'],
             status: CardStatusEnum::from($data['Status']),

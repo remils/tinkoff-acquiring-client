@@ -10,13 +10,15 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * RemoveCustomerRequest
  *
- * @phpstan-type T array{
+ * @template TSignatureData of array<string,string>
+ *
+ * @phpstan-type TData array{
  *      TerminalKey: string,
  *      CustomerKey: string,
  *      IP: string|null
  * }
  *
- * @implements RequestInterface<T>
+ * @implements RequestInterface<TData,TSignatureData>
  */
 class RemoveCustomerRequest implements RequestInterface
 {
@@ -36,7 +38,7 @@ class RemoveCustomerRequest implements RequestInterface
     public function build(string $terminalKey, SignatureServiceInterface $signatureService)
     {
         /**
-         * @var T $data
+         * @var TData $data
          */
         $data = [
             'TerminalKey' => $terminalKey,

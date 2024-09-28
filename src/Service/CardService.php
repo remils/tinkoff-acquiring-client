@@ -15,9 +15,16 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 /**
  * CardService
+ *
+ * @template TSignatureData of array<string,string>
  */
 class CardService
 {
+    /**
+     * @param string $terminalKey
+     * @param SignatureServiceInterface<TSignatureData> $signatureService
+     * @param ClientInterface $client
+     */
     public function __construct(
         protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
@@ -28,7 +35,7 @@ class CardService
     /**
      * Сохраняет карту клиента. В случае успешной привязки переадресует клиента на Success Add Card URL,
      * а в противном случае на Fail Add Card URL
-     * @param AddCardRequest $request
+     * @param AddCardRequest<TSignatureData> $request
      * @return AddCardResponse
      */
     public function addCard(AddCardRequest $request): AddCardResponse
@@ -41,10 +48,9 @@ class CardService
         return AddCardResponse::fromArray($response);
     }
 
-
     /**
      * Возвращает список всех привязанных карт клиента, включая удаленные
-     * @param CardListRequest $request
+     * @param CardListRequest<TSignatureData> $request
      * @return CardListResponse
      */
     public function cardList(CardListRequest $request): CardListResponse
@@ -63,7 +69,7 @@ class CardService
 
     /**
      * Удаляет привязанную карту клиента
-     * @param RemoveCardRequest $request
+     * @param RemoveCardRequest<TSignatureData> $request
      * @return RemoveCardResponse
      */
     public function removeCard(RemoveCardRequest $request): RemoveCardResponse

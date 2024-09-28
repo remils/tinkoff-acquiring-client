@@ -6,6 +6,18 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Payment;
 
 /**
  * InitResponse
+ *
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      Amount: int,
+ *      OrderId: string,
+ *      Success: bool,
+ *      Status: string,
+ *      PaymentId: string,
+ *      ErrorCode: string,
+ *      Message: string|null,
+ *      Details: string|null
+ * }
  */
 class InitResponse
 {
@@ -31,5 +43,24 @@ class InitResponse
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
+    }
+
+    /**
+     * @param T $data
+     * @return InitResponse
+     */
+    public static function fromArray(array $data): InitResponse
+    {
+        return new InitResponse(
+            terminalKey: $data['TerminalKey'],
+            amount: $data['Amount'],
+            orderId: $data['OrderId'],
+            success: $data['Success'],
+            status: $data['Status'],
+            paymentId: $data['PaymentId'],
+            errorCode: $data['ErrorCode'],
+            message: $data['Message'] ?? null,
+            details: $data['Details'] ?? null
+        );
     }
 }

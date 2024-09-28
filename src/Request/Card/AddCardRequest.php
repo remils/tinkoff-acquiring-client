@@ -11,7 +11,9 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * AddCardRequest
  *
- * @phpstan-type T array{
+ * @template TSignatureData of array<string,string>
+ *
+ * @phpstan-type TData array{
  *      TerminalKey: string,
  *      CustomerKey: string,
  *      IP: string|null,
@@ -19,7 +21,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  *      ResidentState: bool|null
  * }
  *
- * @implements RequestInterface<T>
+ * @implements RequestInterface<TData,TSignatureData>
  */
 class AddCardRequest implements RequestInterface
 {
@@ -58,7 +60,7 @@ class AddCardRequest implements RequestInterface
         SignatureServiceInterface $signatureService,
     ) {
         /**
-         * @var T $data
+         * @var TData $data
          */
         $data = [
             'TerminalKey' => $terminalKey,

@@ -46,9 +46,9 @@ class CustomerResponse
      * @param T $data
      * @return CustomerResponse
      */
-    public static function fromArray(array $data): static
+    public static function fromArray(array $data): CustomerResponse
     {
-        return new static(
+        return new CustomerResponse(
             terminalKey: $data['TerminalKey'],
             customerKey: $data['CustomerKey'],
             success: $data['Success'],

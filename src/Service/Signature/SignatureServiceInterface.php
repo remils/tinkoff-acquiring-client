@@ -6,13 +6,18 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service\Signature;
 
 /**
  * SignatureServiceInterface
+ *
+ * @template TSignatureData of array<string,string>
  */
 interface SignatureServiceInterface
 {
     /**
      * Возвращает подписанный запрос.
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
+     *
+     * @template TData of array<string,mixed>
+     *
+     * @param TData $data
+     * @return TData&TSignatureData
      */
     public function signedRequest(array $data): array;
 }
