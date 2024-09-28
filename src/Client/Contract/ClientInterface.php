@@ -18,5 +18,5 @@ interface ClientInterface
      * @param TData $data
      * @return mixed
      */
-    public function execute(string $action, $data): mixed;
+    public function execute(string $action, array $data): mixed;
 }
