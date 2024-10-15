@@ -22,19 +22,11 @@ class CacheWrapperClient implements ClientInterface
      * @param ClientInterface $client
      * @param CacheItemPoolInterface $cache
      * @param DateInterval $expiresAfter
-     * @param string[] $excludedProperties
      */
     public function __construct(
         protected readonly ClientInterface $client,
         protected readonly CacheItemPoolInterface $cache,
         protected readonly DateInterval $expiresAfter = new DateInterval('PT15S'),
-        protected readonly array $excludedProperties = [
-            'DigestValue',
-            'SignatureValue',
-            'X509SerialNumber',
-            'Receipt',
-            'DATA',
-        ],
     ) {
     }
 
@@ -70,21 +62,28 @@ class CacheWrapperClient implements ClientInterface
      */
     protected function getCacheKey(string $action, array $data): string
     {
-        $properties = [];
-
-        foreach ($data as $key => $value) {
-            if (in_array($key, $this->excludedProperties)) {
-                continue;
-            }
-
-            $properties[$key] = $value;
-        }
-
-        ksort($properties);
-
         return hash(
             'sha256',
-            $action . '|' . implode('|', $properties),
+            $action . '|' . $this->implodeData($data),
         );
+    }
+
+    /**
+     * @template TData of array<string,mixed>
+     *
+     * @param TData $data
+     * @return string
+     */
+    protected function implodeData(array $data): string
+    {
+        ksort($data);
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->implodeData($value);
+            }
+        }
+
+        return implode('|', $data);
     }
 }
