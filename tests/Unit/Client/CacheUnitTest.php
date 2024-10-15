@@ -68,6 +68,8 @@ class CacheUnitTest extends TestCase
             expiresAfter: new DateInterval('PT30M'),
         );
 
+        $this->assertInstanceOf(ClientInterface::class, $cacheWrapperClient);
+
         $response = $cacheWrapperClient->execute('ActionName', [
             'Key3' => 'Value3',
             'Key2' => 'Value2',
@@ -107,6 +109,8 @@ class CacheUnitTest extends TestCase
             client: $client,
             cache: $cache,
         );
+
+        $this->assertInstanceOf(ClientInterface::class, $cacheWrapperClient);
 
         $response = $cacheWrapperClient->execute('ActionName', [
             'Key3' => 'Value3',
