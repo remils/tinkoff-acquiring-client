@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Service\Signature;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
