@@ -10,7 +10,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\TokenService;
 
 $service = new TokenService(
     password: 'Password',
-    excludedProperties: ['Items'], // Названия ключей массива которые не должны участвовать в генерации токена.
+    excludedProperties: ['Items'], // названия ключей массива которые не должны участвовать в генерации токена
 );
 
 $data = [
