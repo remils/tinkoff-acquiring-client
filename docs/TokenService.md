@@ -13,8 +13,6 @@ $service = new TokenService(
     excludedProperties: ['Items'], // Названия ключей массива которые не должны участвовать в генерации токена.
 );
 
-$this->assertInstanceOf(SignatureServiceInterface::class, $service);
-
 $data = [
     'TerminalKey' => 'TestBank',
     'Items' => [1,2,3,4,5],
