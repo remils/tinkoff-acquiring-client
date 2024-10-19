@@ -12,7 +12,7 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Response\Card;
  *      CustomerKey: string,
  *      RequestKey: string,
  *      PaymentURL: string,
- *      PaymentId: int|null,
+ *      PaymentId: string|null,
  *      Success: bool,
  *      ErrorCode: string,
  *      Message: string|null,
@@ -27,7 +27,7 @@ class AddCardResponse
      * @param string $requestKey Идентификатор запроса на привязку карты
      * @param string $paymentUrl Ссылка на страницу привязки карты. На данную страницу необходимо переадресовать клиента
      * для привязки карты.
-     * @param int|null $paymentId Идентификатор операции. Не возвращается при CheckType NO
+     * @param string|null $paymentId Идентификатор операции. Не возвращается при CheckType NO
      * @param bool $success Успешность прохождения запроса (true/false)
      * @param string $errorCode Код ошибки. «0» в случае успеха
      * @param string|null $message Краткое описание ошибки
@@ -40,7 +40,7 @@ class AddCardResponse
         public readonly string $paymentUrl,
         public readonly bool $success,
         public readonly string $errorCode,
-        public readonly ?int $paymentId = null,
+        public readonly ?string $paymentId = null,
         public readonly ?string $message = null,
         public readonly ?string $details = null,
     ) {
