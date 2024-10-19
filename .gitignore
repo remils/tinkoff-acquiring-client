@@ -1,5 +1,7 @@
 # Folders
 /vendor
+/coverage
+/.phpunit.cache
 
 # Files
 composer.lock

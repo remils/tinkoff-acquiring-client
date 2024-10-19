@@ -10,11 +10,12 @@
         "client"
     ],
     "scripts": {
-        "tests": "./vendor/bin/phpunit",
+        "tests": "php -d xdebug.mode=off ./vendor/bin/phpunit -c ./phpunit.xml",
         "analyse": [
-            "vendor/bin/phpcs -d memory_limit=256M --standard=PSR12 src --colors -p",
-            "vendor/bin/phpstan analyse -l 7 src"
-        ]
+            "php vendor/bin/phpcs -d memory_limit=256M --standard=PSR12 src --colors -p",
+            "php vendor/bin/phpstan analyse -l 7 src"
+        ],
+        "coverage": "php -d xdebug.mode=coverage ./vendor/bin/phpunit -c ./phpunit.xml --coverage-html=./coverage"
     },
     "homepage": "https://github.com/sergey-zatulivetrov/tinkoff-acquiring-client",
     "license": "MIT",
