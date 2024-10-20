@@ -35,14 +35,10 @@ class TokenService implements SignatureServiceInterface
      */
     public function signedRequest(array $data): array
     {
-        /**
-         * @var TSignatureData $signatureData
-         */
-        $signatureData = [
+        return [
+            ...$data,
             'Token' => $this->getToken($data),
         ];
-
-        return array_merge($signatureData, $data);
     }
 
     /**

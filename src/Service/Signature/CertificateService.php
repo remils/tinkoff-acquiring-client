@@ -43,16 +43,12 @@ class CertificateService implements SignatureServiceInterface
     {
         $hashBinary = $this->getHashBinary($data);
 
-        /**
-         * @var TSignatureData $signatureData
-         */
-        $signatureData = [
+        return [
+            ...$data,
             'X509SerialNumber' => $this->serialNumber,
             'DigestValue' => base64_encode($hashBinary),
             'SignatureValue' => base64_encode($this->signPrivateKey($hashBinary)),
         ];
-
-        return array_merge($signatureData, $data);
     }
 
     /**
