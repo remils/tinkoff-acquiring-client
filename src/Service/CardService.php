@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
@@ -37,6 +39,7 @@ class CardService
      * а в противном случае на Fail Add Card URL
      * @param AddCardRequest<TSignatureData> $request
      * @return AddCardResponse
+     * @throws TinkoffException|HttpException
      */
     public function addCard(AddCardRequest $request): AddCardResponse
     {
@@ -52,6 +55,7 @@ class CardService
      * Возвращает список всех привязанных карт клиента, включая удаленные
      * @param CardListRequest<TSignatureData> $request
      * @return CardListResponse
+     * @throws TinkoffException|HttpException
      */
     public function cardList(CardListRequest $request): CardListResponse
     {
@@ -60,17 +64,14 @@ class CardService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        if (array_is_list($response)) {
-            return CardListResponse::listFromArray($response);
-        }
-
-        return CardListResponse::failFromArray($response);
+        return CardListResponse::fromArray($response);
     }
 
     /**
      * Удаляет привязанную карту клиента
      * @param RemoveCardRequest<TSignatureData> $request
      * @return RemoveCardResponse
+     * @throws TinkoffException|HttpException
      */
     public function removeCard(RemoveCardRequest $request): RemoveCardResponse
     {

@@ -7,11 +7,16 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Entity\Card\Card;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CheckTypeEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\AddCardResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\CardListResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\RemoveCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\CardService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
@@ -72,14 +77,11 @@ class CardUnitTest extends TestCase
 
         $response = $service->addCard($request);
 
+        $this->assertInstanceOf(AddCardResponse::class, $response);
+
         $this->assertEquals('6155312072', $response->paymentId);
-        $this->assertEquals('TinkoffBankTest', $response->terminalKey);
         $this->assertEquals('906540', $response->customerKey);
         $this->assertEquals('ed989549-d3be-4758-95c7-22647e03f9ec', $response->requestKey);
-        $this->assertEquals('0', $response->errorCode);
-        $this->assertEquals(true, $response->success);
-        $this->assertEquals('Неверные параметры', $response->message);
-        $this->assertEquals('Терминал не найден', $response->details);
         $this->assertEquals('82a31a62-6067-4ad8-b379-04bf13e37642d', $response->paymentUrl);
     }
 
@@ -137,14 +139,75 @@ class CardUnitTest extends TestCase
 
         $response = $service->removeCard($request);
 
-        $this->assertEquals('TinkoffBankTest', $response->terminalKey);
+        $this->assertInstanceOf(RemoveCardResponse::class, $response);
+
         $this->assertEquals(CardStatusEnum::Deleted, $response->status);
         $this->assertEquals('testCustomer1234', $response->customerKey);
         $this->assertEquals('156516516', $response->cardId);
         $this->assertEquals(CardTypeEnum::Debiting, $response->cardType);
-        $this->assertEquals(true, $response->success);
-        $this->assertEquals('0', $response->errorCode);
-        $this->assertEquals('Неверные параметры', $response->message);
-        $this->assertEquals('Не удалось удалить карту клиента, для данного клиента такая карта не существует', $response->details);
+    }
+
+    #[Test]
+    public function cardList(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $signatureService = $this->createMock(SignatureServiceInterface::class);
+
+        $signatureService->method('signedRequest')
+            ->willReturnCallback(function (array $data): array {
+                $data['Token'] = '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e';
+
+                return $data;
+            });
+
+        $client->method('execute')
+            ->willReturnCallback(function (string $action, array $data): array {
+                $this->assertEquals('GetCardList', $action);
+
+                $this->assertEquals([
+                    'TerminalKey' => 'testRegressBank',
+                    'CustomerKey' => 'testCustomer1234',
+                    'Token' => '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e',
+                    'SavedCard' => true,
+                    'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+                ], $data);
+
+                return [
+                    [
+                        'CardId' => '881900',
+                        'Pan' => '518223******0036',
+                        'Status' => 'D',
+                        'RebillId' => '6155312073',
+                        'CardType' => 0,
+                        'ExpDate' => '1122'
+                    ]
+                ];
+            });
+
+
+        $service = new CardService(
+            terminalKey: 'testRegressBank',
+            signatureService: $signatureService,
+            client: $client,
+        );
+
+        $request = new CardListRequest(
+            customerKey: 'testCustomer1234',
+            savedCard: true,
+            ip: '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+        );
+
+        $response = $service->cardList($request);
+
+        $this->assertInstanceOf(CardListResponse::class, $response);
+        $this->assertInstanceOf(Card::class, $response->items[0]);
+
+        $this->assertEquals('881900', $response->items[0]->cardId);
+        $this->assertEquals('518223******0036', $response->items[0]->pan);
+        $this->assertEquals(CardStatusEnum::Deleted, $response->items[0]->status);
+        $this->assertEquals(CardTypeEnum::Debiting, $response->items[0]->cardType);
+        $this->assertEquals('6155312073', $response->items[0]->rebillId);
+        $this->assertEquals('1122', $response->items[0]->expDate);
     }
 }
