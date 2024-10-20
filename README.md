@@ -40,6 +40,14 @@ composer require sergey-zatulivetrov/tinkoff-acquiring-client
 
 [Подписание запросов с помощью цифрового сертификата](./docs/CertificateService.md)
 
+## Развитие
+
+Нашел баг? Делай PullRequest!
+
+Есть идеи? Делай PullRequest!
+
+В любой непонятной ситуации делай PullRequest (для более быстрого рассмотрения пингани в телеграм [@sergey_zatulivetrov](https://t.me/sergey_zatulivetrov))!
+
 ## Лицензия
 
 Распространяется в рамках [MIT](./LICENSE).
