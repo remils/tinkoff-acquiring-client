@@ -6,6 +6,7 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Client;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 
 /**
  * Client
@@ -31,7 +32,6 @@ class Client implements ClientInterface
 
     /**
      * @inheritDoc
-     * @throws HttpException
      */
     public function execute(string $action, array $data): mixed
     {
@@ -43,20 +43,34 @@ class Client implements ClientInterface
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
+            'User-Agent: TinkoffAcquiringPHPClient/4.0',
         ]);
 
-        $result = curl_exec($curl);
-        $code = curl_errno($curl);
-        $message = curl_error($curl);
+        $result = strval(curl_exec($curl));
+        $status = intval(curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
+        $contentLength = intval(curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD));
 
         curl_close($curl);
 
-        if ($code) {
-            throw new HttpException($message, $code);
+        if ($status !== 200) {
+            throw new HttpException('Network error', $status);
         }
 
-        return json_decode((string)$result, true);
+        $content = mb_strcut($result, -$contentLength, $contentLength);
+
+        $response = json_decode($content, true);
+
+        if ($response['Success'] === false) {
+            throw new TinkoffException(
+                code: intval($response['ErrorCode']),
+                message: strval($response['Message']),
+                details: strval($response['Details']),
+            );
+        }
+
+        return $response;
     }
 }

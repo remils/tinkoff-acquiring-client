@@ -30,6 +30,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-curl": "*",
+        "ext-mbstring": "*",
         "psr/log": "^3.0",
         "psr/cache": "^3.0"
     },
