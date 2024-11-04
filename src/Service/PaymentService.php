@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\InitRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
@@ -36,6 +38,7 @@ class PaymentService
      * Инициирует выплату
      * @param InitRequest<TSignatureData> $request
      * @return InitResponse
+     * @throws TinkoffException|HttpException
      */
     public function init(InitRequest $request): InitResponse
     {
@@ -51,6 +54,7 @@ class PaymentService
      * Производит пополнение карты
      * @param PaymentRequest<TSignatureData> $request
      * @return PaymentResponse
+     * @throws TinkoffException|HttpException
      */
     public function payment(PaymentRequest $request): PaymentResponse
     {
@@ -66,6 +70,7 @@ class PaymentService
      * Возвращает текущий статус выплаты
      * @param StateRequest<TSignatureData> $request
      * @return StateResponse
+     * @throws TinkoffException|HttpException
      */
     public function state(StateRequest $request): StateResponse
     {
