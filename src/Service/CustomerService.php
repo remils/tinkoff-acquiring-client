@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\AddCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
@@ -40,6 +42,7 @@ class CustomerService
      * совершен рекуррентный платеж
      * @param AddCustomerRequest<TSignatureData> $request
      * @return AddCustomerResponse
+     * @throws TinkoffException|HttpException
      */
     public function addCustomer(AddCustomerRequest $request): AddCustomerResponse
     {
@@ -55,6 +58,7 @@ class CustomerService
      * Возвращает данные клиента, сохраненные в связке с терминалом
      * @param CustomerRequest<TSignatureData> $request
      * @return CustomerResponse
+     * @throws TinkoffException|HttpException
      */
     public function customer(CustomerRequest $request): CustomerResponse
     {
@@ -70,6 +74,7 @@ class CustomerService
      * Удаляет сохраненные данные клиента
      * @param RemoveCustomerRequest<TSignatureData> $request
      * @return RemoveCustomerResponse
+     * @throws TinkoffException|HttpException
      */
     public function removeCustomer(RemoveCustomerRequest $request): RemoveCustomerResponse
     {
