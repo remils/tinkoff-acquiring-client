@@ -5,7 +5,7 @@
 [DateInterval](https://www.php.net/manual/ru/dateinterval.construct.php) используется для установки времени жизни кеша.
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\Client\Client;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\SocketClient;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\CacheWrapperClient;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -14,7 +14,13 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 $cache = ...;
 
-$client = new Client(apiUrl: 'https://rest-api-test.tinkoff.ru/v2/');
+$client = new SocketClient(
+    host: 'securepay.tinkoff.ru',
+    port: 443,
+    apiUrl: 'v2',
+    ssl: true,
+    timeout: 30,
+);
 
 $cacheWrapperClient = new CacheWrapperClient(
     client: $client,

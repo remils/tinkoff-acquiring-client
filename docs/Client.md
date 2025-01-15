@@ -12,10 +12,26 @@
 
 На тестовом URL требуется получить доступ, иначе будет 403 код ошибки.
 
-```php
-use SergeyZatulivetrov\TinkoffAcquiring\Client\Client;
+Curl клиент (требуется установить curl):
 
-$client = new Client(apiUrl: 'https://rest-api-test.tinkoff.ru/v2/');
+```php
+use SergeyZatulivetrov\TinkoffAcquiring\Client\CurlClient;
+
+$client = new CurlClient(apiUrl: 'https://rest-api-test.tinkoff.ru/v2/');
+```
+
+Socket клиент:
+
+```php
+use SergeyZatulivetrov\TinkoffAcquiring\Client\SocketClient;
+
+$client = new SocketClient(
+    host: 'securepay.tinkoff.ru',
+    port: 443,
+    apiUrl: 'v2',
+    ssl: true,
+    timeout: 30,
+);
 ```
 
 Клиент не используется напрямую (хотя такая возможность есть).

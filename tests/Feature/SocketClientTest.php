@@ -6,10 +6,10 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Feature;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use SergeyZatulivetrov\TinkoffAcquiring\Client\Client;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\SocketClient;
 
-class ClientTest extends TestCase
+class SocketClientTest extends TestCase
 {
     #[Test]
     public function tinkoffException(): void
@@ -17,8 +17,12 @@ class ClientTest extends TestCase
         $this->expectException(TinkoffException::class);
         $this->expectExceptionMessage('Неверные параметры.');
 
-        $client = new Client(
-            apiUrl: 'https://securepay.tinkoff.ru/v2/'
+        $client = new SocketClient(
+            host: 'securepay.tinkoff.ru',
+            port: 443,
+            apiUrl: 'v2',
+            ssl: true,
+            timeout: 30,
         );
 
         $data = [

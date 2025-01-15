@@ -9,7 +9,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 
 /**
- * Client
+ * CurlClient
  *
  * Интернет-эквайринг:
  * - Тестовый URL: https://rest-api-test.tinkoff.ru/v2/
@@ -20,7 +20,7 @@ use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
  *
  * На тестовом URL требуется получить доступ, иначе будет 403 код ошибки.
  */
-class Client implements ClientInterface
+class CurlClient implements ClientInterface
 {
     /**
      * @param string $apiUrl URL для обращения
@@ -35,6 +35,9 @@ class Client implements ClientInterface
      */
     public function execute(string $action, array $data): mixed
     {
+        $content = json_encode($data);
+        $contentLength = mb_strlen($content);
+
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, $this->apiUrl . $action);
@@ -42,11 +45,14 @@ class Client implements ClientInterface
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $content);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'User-Agent: TinkoffAcquiringPHPClient/4.0',
+            "Accept: application/json",
+            "Content-Type: application/json",
+            "Content-Length: {$contentLength}",
+            "User-Agent: SergeyZatulivetrov/TinkoffAcquiring 4.0.0",
+            "Connection: Close",
         ]);
 
         $result = strval(curl_exec($curl));

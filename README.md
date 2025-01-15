@@ -14,7 +14,7 @@
 
 - PHP 8.1 и выше
 
-- curl
+- curl (не обязательно)
 
 - mbstring
 
