@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\MarkCodeTypeEnum;
+
 /**
  * MarkCode
  *
@@ -15,7 +17,7 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 class MarkCode
 {
     /**
-     * @param string $markCodeType Тип штрих кода. Возможные значения:
+     * @param MarkCodeTypeEnum $markCodeType Тип штрих кода. Возможные значения:
      * - UNKNOWN - код товара, формат которого не идентифицирован, как один из реквизитов
      * - EAN8 - код товара в формате EAN-8.
      * - EAN13 - код товара в формате EAN-13
@@ -30,7 +32,7 @@ class MarkCode
      * @param string $value Код маркировки
      */
     public function __construct(
-        public readonly string $markCodeType,
+        public readonly MarkCodeTypeEnum $markCodeType,
         public readonly string $value,
     ) {
     }
@@ -41,7 +43,7 @@ class MarkCode
     public function toArray(): array
     {
         return [
-            'MarkCodeType' => $this->markCodeType,
+            'MarkCodeType' => $this->markCodeType->value,
             'Value' => $this->value,
         ];
     }
