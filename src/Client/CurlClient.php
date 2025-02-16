@@ -35,7 +35,7 @@ class CurlClient implements ClientInterface
      */
     public function execute(string $action, array $data): mixed
     {
-        $content = json_encode($data);
+        $content = json_encode($data) ?: '';
         $contentLength = mb_strlen($content);
 
         $curl = curl_init();

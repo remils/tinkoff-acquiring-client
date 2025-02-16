@@ -46,7 +46,7 @@ class SocketClient implements ClientInterface
     {
         $socket = $this->socket();
 
-        $content = json_encode($data);
+        $content = json_encode($data) ?: '';
 
         $message = $this->message($action, $content);
 
@@ -57,24 +57,29 @@ class SocketClient implements ClientInterface
         }
 
         // HTTP/1.1 200 Ok
-        $head = explode(" ", fgets($socket), 3);
+        $head = explode(" ", fgets($socket) ?: '', 3);
 
         $code = (int) ($head[1] ?? 500);
-        $status = $head[2] ?? 'Internal error';
+        $phrase = $head[2] ?? 'Internal error';
 
         if ($code !== 200) {
-            throw new HttpException($status, $code);
+            throw new HttpException($phrase, $code);
         }
 
         $headers = [];
 
-        while ($str = trim(fgets($socket))) {
+        while ($str = trim(fgets($socket) ?: '')) {
             [$key, $value] = explode(':', $str, 2);
 
             $headers[mb_strtolower($key)] = trim($value);
         }
 
-        $content = fread($socket, (int) $headers['content-length']);
+        /**
+         * @var int<1,max>
+         */
+        $contentLength = (int)($headers['content-length'] ?? 0);
+
+        $content = fread($socket, $contentLength) ?: '{}';
 
         fclose($socket);
 

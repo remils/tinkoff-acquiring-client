@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Request\Payment;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\Init;
 
-use SergeyZatulivetrov\TinkoffAcquiring\Request\RequestInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
- * InitRequest
+ * InitPayoutRequest
+ *
+ * Инициализация выплаты
  *
  * @template TSignatureData of array<string,string>
  *
@@ -20,9 +21,9 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
  *      DATA: array<string,string|integer|float|boolean>
  * }
  *
- * @implements RequestInterface<TData,TSignatureData>
+ * @implements InitRequestInterface<TData,TSignatureData>
  */
-class InitRequest implements RequestInterface
+class InitPayoutRequest implements InitRequestInterface
 {
     /**
      * @param string $orderId Уникальный номер заказа в системе Мерчанта

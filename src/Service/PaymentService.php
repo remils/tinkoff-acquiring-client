@@ -7,7 +7,7 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\InitRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\Init\InitRequestInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Response\Payment\InitResponse;
@@ -35,12 +35,13 @@ class PaymentService
     }
 
     /**
-     * Инициирует выплату
-     * @param InitRequest<TSignatureData> $request
+     * Инициирует выплату, либо оплату
+     * @phpstan-ignore-next-line
+     * @param InitRequestInterface $request
      * @return InitResponse
      * @throws TinkoffException|HttpException
      */
-    public function init(InitRequest $request): InitResponse
+    public function init(InitRequestInterface $request): InitResponse
     {
         $response = $this->client->execute(
             action: 'Init',

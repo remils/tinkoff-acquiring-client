@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use SergeyZatulivetrov\TinkoffAcquiring\Service\PaymentService;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\InitRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
+use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\PaymentStatusEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\Init\InitPayoutRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\PaymentService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 class PaymentUnitTest extends TestCase
 {
     #[Test]
-    public function init(): void
+    public function initPayout(): void
     {
         $client = $this->createMock(ClientInterface::class);
 
@@ -52,13 +52,14 @@ class PaymentUnitTest extends TestCase
         $signatureService->method('signedRequest')
             ->willReturnCallback(function (array $data): array {
                 $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
+                // @phpcs:ignore
                 $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
                 $data['X509SerialNumber'] = '2613832945';
 
                 return $data;
             });
 
-        $request = new InitRequest(
+        $request = new InitPayoutRequest(
             orderId: 'autoOrd1615285401068DELb',
             amount: 1751,
             cardId: '67321574',
@@ -109,6 +110,7 @@ class PaymentUnitTest extends TestCase
         $signatureService->method('signedRequest')
             ->willReturnCallback(function (array $data): array {
                 $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
+                // @phpcs:ignore
                 $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
                 $data['X509SerialNumber'] = '2613832945';
 
@@ -162,6 +164,7 @@ class PaymentUnitTest extends TestCase
         $signatureService->method('signedRequest')
             ->willReturnCallback(function (array $data): array {
                 $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
+                // @phpcs:ignore
                 $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
                 $data['X509SerialNumber'] = '2613832945';
 
