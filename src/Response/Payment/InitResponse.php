@@ -13,7 +13,8 @@ use SergeyZatulivetrov\TinkoffAcquiring\Enum\PaymentStatusEnum;
  *      Amount: int,
  *      OrderId: string,
  *      Status: string,
- *      PaymentId: string
+ *      PaymentId: string,
+ *      PaymentURL: string|null
  * }
  */
 class InitResponse
@@ -23,12 +24,14 @@ class InitResponse
      * @param string $orderId Номер заказа в системе Продавца
      * @param PaymentStatusEnum $status Статус транзакции
      * @param string $paymentId Уникальный идентификатор транзакции в системе Банка
+     * @param string|null $paymentUrl Ссылка на платежную форму. Параметр возвращается только для мерчантов без PCI DSS.
      */
     public function __construct(
         public readonly int $amount,
         public readonly string $orderId,
         public readonly PaymentStatusEnum $status,
         public readonly string $paymentId,
+        public readonly ?string $paymentUrl,
     ) {
     }
 
@@ -43,6 +46,7 @@ class InitResponse
             orderId: $data['OrderId'],
             status: PaymentStatusEnum::from($data['Status']),
             paymentId: $data['PaymentId'],
+            paymentUrl: $data['PaymentURL'] ?? null,
         );
     }
 }
