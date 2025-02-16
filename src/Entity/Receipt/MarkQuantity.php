@@ -6,6 +6,11 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
 /**
  * MarkQuantity
+ *
+ * @phpstan-type TData array{
+ *      Numerator: int,
+ *      Denominator: int
+ * }
  */
 class MarkQuantity
 {
@@ -19,5 +24,16 @@ class MarkQuantity
         public readonly int $numerator,
         public readonly int $denominator,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        return [
+            'Numerator' => $this->numerator,
+            'Denominator' => $this->denominator,
+        ];
     }
 }

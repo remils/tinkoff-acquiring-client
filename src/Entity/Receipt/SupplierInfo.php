@@ -6,6 +6,12 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
 /**
  * SupplierInfo
+ *
+ * @phpstan-type TData array{
+ *      Phones: string[]|null,
+ *      Name: string|null,
+ *      Inn: string|null
+ * }
  */
 class SupplierInfo
 {
@@ -25,5 +31,30 @@ class SupplierInfo
         public readonly ?string $name = null,
         public readonly ?string $inn = null,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        /**
+         * @var TData $data
+         */
+        $data = [];
+
+        if (null !== $this->phones) {
+            $data['Phones'] = $this->phones;
+        }
+
+        if (null !== $this->name) {
+            $data['Name'] = $this->name;
+        }
+
+        if (null !== $this->inn) {
+            $data['Inn'] = $this->inn;
+        }
+
+        return $data;
     }
 }

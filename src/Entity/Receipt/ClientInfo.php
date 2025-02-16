@@ -6,6 +6,14 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
 /**
  * ClientInfo
+ *
+ * @phpstan-type TData array{
+ *      Address: string|null,
+ *      Birthdate: string|null,
+ *      Citizenship: string|null,
+ *      DocumentCode: string|null,
+ *      DocumentData: string|null
+ * }
  */
 class ClientInfo
 {
@@ -49,5 +57,38 @@ class ClientInfo
         public readonly ?string $documentData,
         public readonly ?string $address,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        /**
+         * @var TData $data
+         */
+        $data = [];
+
+        if (null !== $this->address) {
+            $data['Address'] = $this->address;
+        }
+
+        if (null !== $this->birthdate) {
+            $data['Birthdate'] = $this->birthdate;
+        }
+
+        if (null !== $this->citizenship) {
+            $data['Citizenship'] = $this->citizenship;
+        }
+
+        if (null !== $this->documentCode) {
+            $data['DocumentCode'] = $this->documentCode;
+        }
+
+        if (null !== $this->documentData) {
+            $data['DocumentData'] = $this->documentData;
+        }
+
+        return $data;
     }
 }

@@ -10,8 +10,8 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity;
  * @phpstan-type TData array{
  *      ShopCode: string,
  *      Amount: int,
- *      Name: string,
- *      Fee: string
+ *      Name: string|null,
+ *      Fee: string|null
  * }
  */
 class Shop

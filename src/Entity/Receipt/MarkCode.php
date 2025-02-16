@@ -6,6 +6,11 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
 /**
  * MarkCode
+ *
+ * @phpstan-type TData array{
+ *      MarkCodeType: string,
+ *      Value: string
+ * }
  */
 class MarkCode
 {
@@ -28,5 +33,16 @@ class MarkCode
         public readonly string $markCodeType,
         public readonly string $value,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        return [
+            'MarkCodeType' => $this->markCodeType,
+            'Value' => $this->value,
+        ];
     }
 }

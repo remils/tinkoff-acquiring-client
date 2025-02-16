@@ -8,6 +8,17 @@ use SergeyZatulivetrov\TinkoffAcquiring\Enum\AgentSignEnum;
 
 /**
  * AgentData
+ *
+ * @phpstan-type TData array{
+ *      AgentSign: string|null,
+ *      OperationName: string|null,
+ *      Phones: string[]|null,
+ *      ReceiverPhones: string[]|null,
+ *      TransferPhones: string[]|null,
+ *      OperatorName: string|null,
+ *      OperatorAddress: string|null,
+ *      OperatorInn: string|null
+ * }
  */
 class AgentData
 {
@@ -62,5 +73,50 @@ class AgentData
         public readonly ?string $operatorAddress = null,
         public readonly ?string $operatorInn = null,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        /**
+         * @var TData $data
+         */
+        $data = [];
+
+        if (null !== $this->agentSign) {
+            $data['AgentSign'] = $this->agentSign->value;
+        }
+
+        if (null !== $this->operationName) {
+            $data['OperationName'] = $this->operationName;
+        }
+
+        if (null !== $this->phones) {
+            $data['Phones'] = $this->phones;
+        }
+
+        if (null !== $this->receiverPhones) {
+            $data['ReceiverPhones'] = $this->receiverPhones;
+        }
+
+        if (null !== $this->transferPhones) {
+            $data['TransferPhones'] = $this->transferPhones;
+        }
+
+        if (null !== $this->operatorName) {
+            $data['OperatorName'] = $this->operatorName;
+        }
+
+        if (null !== $this->operatorAddress) {
+            $data['OperatorAddress'] = $this->operatorAddress;
+        }
+
+        if (null !== $this) {
+            $data['OperatorInn'] = $this->operatorInn;
+        }
+
+        return $data;
     }
 }

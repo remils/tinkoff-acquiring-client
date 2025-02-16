@@ -10,6 +10,35 @@ use SergeyZatulivetrov\TinkoffAcquiring\Enum\VatEnum;
 
 /**
  * ReceiptItem
+ *
+ * @phpstan-import-type TData from AgentData as TAgentData
+ * @phpstan-import-type TData from SupplierInfo as TSupplierInfo
+ * @phpstan-import-type TData from MarkQuantity as TMarkQuantity
+ * @phpstan-import-type TData from SectoralItemProps as TSectoralItemProps
+ * @phpstan-import-type TData from MarkCode as TMarkCode
+ *
+ * @phpstan-type TData array{
+ *      Name: string,
+ *      Quantity: float,
+ *      Amount: int,
+ *      Price: int,
+ *      Tax: string,
+ *      PaymentMethod: string|null,
+ *      PaymentObject: string|null,
+ *      Ean13: string|null,
+ *      AgentData: TAgentData|null,
+ *      SupplierInfo: TSupplierInfo|null,
+ *      MarkQuantity: TMarkQuantity|null,
+ *      SectoralItemProps: TSectoralItemProps|null,
+ *      CountryCode: string|null,
+ *      DeclarationNumber: string|null,
+ *      Excise: string|null,
+ *      MarkCode: TMarkCode|null,
+ *      MarkProcessingMode: string|null,
+ *      MeasurementUnit: string|null,
+ *      ShopCode: string|null,
+ *      UserData: string|null
+ * }
  */
 class ReceiptItem
 {
@@ -90,5 +119,84 @@ class ReceiptItem
         public readonly ?string $shopCode = null,
         public readonly ?string $userData = null,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        /**
+         * @var TData $data
+         */
+        $data = [
+            'Name' => $this->name,
+            'Quantity' => $this->quantity,
+            'Amount' => $this->amount,
+            'Price' => $this->price,
+            'Tax' => $this->tax->value,
+        ];
+
+        if (null !== $this->paymentMethod) {
+            $data['PaymentMethod'] = $this->paymentMethod->value;
+        }
+
+        if (null !== $this->paymentObject) {
+            $data['PaymentObject'] = $this->paymentObject->value;
+        }
+
+        if (null !== $this->ean13) {
+            $data['Ean13'] = $this->ean13;
+        }
+
+        if (null !== $this->declarationNumber) {
+            $data['DeclarationNumber'] = $this->declarationNumber;
+        }
+
+        if (null !== $this->userData) {
+            $data['UserData'] = $this->userData;
+        }
+
+        if (null !== $this->shopCode) {
+            $data['ShopCode'] = $this->shopCode;
+        }
+
+        if (null !== $this->agentData) {
+            $data['AgentData'] = $this->agentData->toArray();
+        }
+
+        if (null !== $this->supplierInfo) {
+            $data['SupplierInfo'] = $this->supplierInfo->toArray();
+        }
+
+        if (null !== $this->markQuantity) {
+            $data['MarkQuantity'] = $this->markQuantity->toArray();
+        }
+
+        if (null !== $this->sectoralItemProps) {
+            $data['SectoralItemProps'] = $this->sectoralItemProps->toArray();
+        }
+
+        if (null !== $this->countryCode) {
+            $data['CountryCode'] = $this->countryCode;
+        }
+
+        if (null !== $this->excise) {
+            $data['Excise'] = $this->excise;
+        }
+
+        if (null !== $this->markCode) {
+            $data['MarkCode'] = $this->markCode->toArray();
+        }
+
+        if (null !== $this->markProcessingMode) {
+            $data['MarkProcessingMode'] = $this->markProcessingMode;
+        }
+
+        if (null !== $this->measurementUnit) {
+            $data['MeasurementUnit'] = $this->measurementUnit;
+        }
+
+        return $data;
     }
 }

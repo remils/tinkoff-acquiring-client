@@ -6,6 +6,13 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Entity\Receipt;
 
 /**
  * SectoralItemProps
+ *
+ * @phpstan-type TData array{
+ *      FederalId: string,
+ *      Date: string,
+ *      Number: string,
+ *      Value: string
+ * }
  */
 class SectoralItemProps
 {
@@ -21,5 +28,18 @@ class SectoralItemProps
         public readonly string $number,
         public readonly string $value,
     ) {
+    }
+
+    /**
+     * @return TData
+     */
+    public function toArray(): array
+    {
+        return [
+            'FederalId' => $this->federalId,
+            'Date' => $this->date,
+            'Number' => $this->number,
+            'Value' => $this->value,
+        ];
     }
 }
