@@ -7,12 +7,12 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\Init\InitRequestInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Payment\InitResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Payment\PaymentResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Payment\StateResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
@@ -48,7 +48,7 @@ class PaymentService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return InitResponse::fromArray($response);
+        return InitResponse::factory($response);
     }
 
     /**
@@ -64,7 +64,7 @@ class PaymentService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return PaymentResponse::fromArray($response);
+        return PaymentResponse::factory($response);
     }
 
     /**
@@ -80,6 +80,6 @@ class PaymentService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return StateResponse::fromArray($response);
+        return StateResponse::factory($response);
     }
 }

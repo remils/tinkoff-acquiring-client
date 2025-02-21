@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use SergeyZatulivetrov\TinkoffAcquiring\Service\CustomerService;
+use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\AddCustomerResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\CustomerResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\RemoveCustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\AddCustomerRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\CustomerService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 class CustomerUnitTest extends TestCase
@@ -62,6 +65,8 @@ class CustomerUnitTest extends TestCase
 
         $response = $service->addCustomer($request);
 
+        $this->assertInstanceOf(AddCustomerResponse::class, $response);
+
         $this->assertEquals('05d65baa-9718-445e-8212-76fa0dd4c1d2', $response->customerKey);
     }
 
@@ -110,6 +115,8 @@ class CustomerUnitTest extends TestCase
 
         $response = $service->customer($request);
 
+        $this->assertInstanceOf(CustomerResponse::class, $response);
+
         $this->assertEquals('05d65baa-9718-445e-8212-76fa0dd4c1d2', $response->customerKey);
         $this->assertEquals('username@test.ru', $response->email);
         $this->assertEquals('+79031234567', $response->phone);
@@ -157,6 +164,8 @@ class CustomerUnitTest extends TestCase
         );
 
         $response = $service->removeCustomer($request);
+
+        $this->assertInstanceOf(RemoveCustomerResponse::class, $response);
 
         $this->assertEquals('05d65baa-9718-445e-8212-76fa0dd4c1d2', $response->customerKey);
     }

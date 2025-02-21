@@ -7,12 +7,12 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\AddCustomerResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\CustomerResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\RemoveCustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\AddCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\AddCustomerResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\CustomerResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Customer\RemoveCustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
@@ -51,7 +51,7 @@ class CustomerService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return AddCustomerResponse::fromArray($response);
+        return AddCustomerResponse::factory($response);
     }
 
     /**
@@ -67,7 +67,7 @@ class CustomerService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return CustomerResponse::fromArray($response);
+        return CustomerResponse::factory($response);
     }
 
     /**
@@ -83,6 +83,6 @@ class CustomerService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return RemoveCustomerResponse::fromArray($response);
+        return RemoveCustomerResponse::factory($response);
     }
 }

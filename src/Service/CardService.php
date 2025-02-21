@@ -7,12 +7,12 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\CardListResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\RemoveCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\AddCardResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\CardListResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Response\Card\RemoveCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
@@ -48,7 +48,7 @@ class CardService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return AddCardResponse::fromArray($response);
+        return AddCardResponse::factory($response);
     }
 
     /**
@@ -64,7 +64,7 @@ class CardService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return CardListResponse::fromArray($response);
+        return CardListResponse::factory($response);
     }
 
     /**
@@ -80,6 +80,6 @@ class CardService
             data: $request->build($this->terminalKey, $this->signatureService),
         );
 
-        return RemoveCardResponse::fromArray($response);
+        return RemoveCardResponse::factory($response);
     }
 }
