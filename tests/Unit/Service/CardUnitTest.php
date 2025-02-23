@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use PHPUnit\Framework\Attributes\Test;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Card;
-use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\CardListResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\RemoveCardResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CheckTypeEnum;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\AddCardRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\CardListRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Card\RemoveCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\CardService;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\ComponentInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\AddCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\CardListRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\RemoveCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\CardListResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\RemoveCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 class CardUnitTest extends TestCase
@@ -30,11 +31,10 @@ class CardUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['Token'] = '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e';
-
-                return $data;
-            });
+            ->willReturn([
+                'TerminalKey' => '1111133333',
+                'Token' => '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e',
+            ]);
 
         $client->method('execute')
             ->willReturnCallback(function (string $action, array $data): array {
@@ -63,26 +63,28 @@ class CardUnitTest extends TestCase
             });
 
         $service = new CardService(
-            terminalKey: '1111133333',
             signatureService: $signatureService,
             client: $client,
         );
 
-        $request = new AddCardRequest(
-            customerKey: 'testCustomer1234',
-            checkType: CheckTypeEnum::No,
-            residentState: true,
-            ip: '10.100.10.10',
-        );
+        $request = AddCardRequest::factory([
+            'CustomerKey' => 'testCustomer1234',
+            'CheckType' => 'NO',
+            'ResidentState' => true,
+            'IP' => '10.100.10.10',
+        ]);
 
         $response = $service->addCard($request);
 
+        $this->assertInstanceOf(ComponentInterface::class, $response);
         $this->assertInstanceOf(AddCardResponse::class, $response);
 
-        $this->assertEquals('6155312072', $response->paymentId);
-        $this->assertEquals('906540', $response->customerKey);
-        $this->assertEquals('ed989549-d3be-4758-95c7-22647e03f9ec', $response->requestKey);
-        $this->assertEquals('82a31a62-6067-4ad8-b379-04bf13e37642d', $response->paymentUrl);
+        $this->assertEquals([
+            'PaymentId' => '6155312072',
+            'CustomerKey' => '906540',
+            'RequestKey' => 'ed989549-d3be-4758-95c7-22647e03f9ec',
+            'PaymentURL' => '82a31a62-6067-4ad8-b379-04bf13e37642d',
+        ], $response->toArray());
     }
 
     #[Test]
@@ -93,11 +95,10 @@ class CardUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['Token'] = '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e';
-
-                return $data;
-            });
+            ->willReturn([
+                'TerminalKey' => 'testRegressBank',
+                'Token' => '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e',
+            ]);
 
         $client->method('execute')
             ->willReturnCallback(function (string $action, array $data): array {
@@ -126,25 +127,26 @@ class CardUnitTest extends TestCase
 
 
         $service = new CardService(
-            terminalKey: 'testRegressBank',
             signatureService: $signatureService,
             client: $client,
         );
 
-        $request = new RemoveCardRequest(
-            customerKey: 'testCustomer1234',
-            cardId: '156516516',
-            ip: '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
-        );
+        $request = RemoveCardRequest::factory([
+            'CustomerKey' => 'testCustomer1234',
+            'CardId' => '156516516',
+            'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+        ]);
 
         $response = $service->removeCard($request);
 
+        $this->assertInstanceOf(ComponentInterface::class, $response);
         $this->assertInstanceOf(RemoveCardResponse::class, $response);
-
-        $this->assertEquals(CardStatusEnum::Deleted, $response->status);
-        $this->assertEquals('testCustomer1234', $response->customerKey);
-        $this->assertEquals('156516516', $response->cardId);
-        $this->assertEquals(CardTypeEnum::Debiting, $response->cardType);
+        $this->assertEquals([
+            'Status' => 'D',
+            'CustomerKey' => 'testCustomer1234',
+            'CardId' => '156516516',
+            'CardType' => 0,
+        ], $response->toArray());
     }
 
     #[Test]
@@ -155,11 +157,10 @@ class CardUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['Token'] = '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e';
-
-                return $data;
-            });
+            ->willReturn([
+                'TerminalKey' => 'testRegressBank',
+                'Token' => '30797e66108934dfa3d841b856fdad227c6b9c46d6a39296e02dc800d86d181e',
+            ]);
 
         $client->method('execute')
             ->willReturnCallback(function (string $action, array $data): array {
@@ -187,27 +188,30 @@ class CardUnitTest extends TestCase
 
 
         $service = new CardService(
-            terminalKey: 'testRegressBank',
             signatureService: $signatureService,
             client: $client,
         );
 
-        $request = new CardListRequest(
-            customerKey: 'testCustomer1234',
-            savedCard: true,
-            ip: '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
-        );
+        $request = CardListRequest::factory([
+            'CustomerKey' => 'testCustomer1234',
+            'SavedCard' => true,
+            'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+        ]);
 
         $response = $service->cardList($request);
 
+        $this->assertInstanceOf(ComponentInterface::class, $response);
         $this->assertInstanceOf(CardListResponse::class, $response);
-        $this->assertInstanceOf(Card::class, $response->items[0]);
 
-        $this->assertEquals('881900', $response->items[0]->cardId);
-        $this->assertEquals('518223******0036', $response->items[0]->pan);
-        $this->assertEquals(CardStatusEnum::Deleted, $response->items[0]->status);
-        $this->assertEquals(CardTypeEnum::Debiting, $response->items[0]->cardType);
-        $this->assertEquals('6155312073', $response->items[0]->rebillId);
-        $this->assertEquals('1122', $response->items[0]->expDate);
+        $this->assertEquals([
+            [
+                'CardId' => '881900',
+                'Pan' => '518223******0036',
+                'Status' => 'D',
+                'RebillId' => '6155312073',
+                'CardType' => 0,
+                'ExpDate' => '1122'
+            ],
+        ], $response->toArray());
     }
 }

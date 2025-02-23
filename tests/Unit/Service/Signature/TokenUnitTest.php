@@ -14,24 +14,22 @@ class TokenUnitTest extends TestCase
     #[Test]
     public function generated(): void
     {
-        $service = new TokenService('TestPassword', ['Array']);
+        $service = new TokenService(
+            'TestBank',
+            'TestPassword',
+            ['DATA']
+        );
 
         $this->assertInstanceOf(SignatureServiceInterface::class, $service);
 
-        $data = [
-            'X' => 245,
-            'A' => 176,
-            'P' => 111,
-            'Array' => [1,2,3,4,5]
-        ];
-
-        $data = $service->signedRequest($data);
-
-        $this->assertEquals([1, 2, 3, 4, 5], $data['Array']);
-
-        $this->assertEquals(
-            hash('sha256', '176111TestPassword245'),
-            $data['Token'],
-        );
+        $this->assertEquals([
+            'TerminalKey' => 'TestBank',
+            'Token'       => 'cdc3ced376c25d0a7e827ca2f5b64b56ade12b6b799b32d35ae0af49d7727a44',
+        ], $service->signedRequest([
+            'Amount' => 123,
+            'DATA' => [
+                'Email' => 'test@mail.loc',
+            ],
+        ]));
     }
 }

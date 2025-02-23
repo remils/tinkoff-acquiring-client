@@ -9,22 +9,24 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * CertificateService
  *
- * @phpstan-type TSignatureData array{
+ * @phpstan-type T array{
+ *      TerminalKey:      string,
  *      X509SerialNumber: string,
- *      DigestValue: string,
- *      SignatureValue: string
+ *      DigestValue:      string,
+ *      SignatureValue:   string
  * }
- *
- * @implements SignatureServiceInterface<TSignatureData>
+ * @phpstan-implements SignatureServiceInterface<T>
  */
 class CertificateService implements SignatureServiceInterface
 {
     /**
-     * @param string $serialNumber Серийный номер сертификата
-     * @param string $privateKey Значение приватного ключа
+     * @param string   $terminalKey        Идентификатор терминала
+     * @param string   $serialNumber       Серийный номер сертификата
+     * @param string   $privateKey         Значение приватного ключа
      * @param string[] $excludedProperties Свойства запроса, которые будут исключены при генерации подписи
      */
     public function __construct(
+        protected readonly string $terminalKey,
         protected readonly string $serialNumber,
         protected readonly string $privateKey,
         protected readonly array $excludedProperties = [
@@ -36,23 +38,31 @@ class CertificateService implements SignatureServiceInterface
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function signedRequest(array $data): array
     {
-        $hashBinary = $this->getHashBinary($data);
+        /**
+         * @var T
+         */
+        $signatureData = [];
 
-        return [
-            ...$data,
-            'X509SerialNumber' => $this->serialNumber,
-            'DigestValue' => base64_encode($hashBinary),
-            'SignatureValue' => base64_encode($this->signPrivateKey($hashBinary)),
-        ];
+        $hashBinary = $this->getHashBinary(array_merge(
+            [
+                'TerminalKey' => $this->terminalKey,
+            ],
+            $data,
+        ));
+
+        $signatureData['TerminalKey']      = $this->terminalKey;
+        $signatureData['X509SerialNumber'] = $this->serialNumber;
+        $signatureData['DigestValue']      = base64_encode($hashBinary);
+        $signatureData['SignatureValue']   = base64_encode($this->signPrivateKey($hashBinary));
+
+        return $signatureData;
     }
 
     /**
      * Подписывает бинарную хеш-сумму сертификатом
+     *
      * @param string $hashBinary
      * @return string
      */
@@ -71,9 +81,7 @@ class CertificateService implements SignatureServiceInterface
     /**
      * Вычислить хэш-сумму по алгоритму SHA256 и получить результат в бинарном виде
      *
-     * @template TData of array<string,mixed>
-     *
-     * @param TData $data
+     * @param array<string,mixed> $data
      * @return string
      */
     protected function getHashBinary(array $data): string

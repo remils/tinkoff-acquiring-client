@@ -7,17 +7,15 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service\Signature;
 /**
  * SignatureServiceInterface
  *
- * @template TSignatureData of array<string,string>
+ * @phpstan-template T of array<string,string>
  */
 interface SignatureServiceInterface
 {
     /**
-     * Возвращает подписанный запрос.
+     * Возвращает подписанный запрос
      *
-     * @template TData of array<string,mixed>
-     *
-     * @param TData $data
-     * @return TData&TSignatureData
+     * @param array<mixed> $data
+     * @return T
      */
     public function signedRequest(array $data): array;
 }

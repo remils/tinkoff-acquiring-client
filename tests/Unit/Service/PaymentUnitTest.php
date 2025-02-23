@@ -4,13 +4,39 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 
+use DateTime;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Collection\ReceiptItemCollection;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Collection\ShopCollection;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\ComponentInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\AgentData;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\ClientInfo;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\MarkCode;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\MarkQuantity;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\Payments;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\Receipt;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\ReceiptItem;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\SectoralItemProps;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\SupplierInfo;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPaymentRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPayoutRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\PaymentRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Shop;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\AgentSignEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\LanguageEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\MarkCodeTypeEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\PaymentMethodEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\PaymentObjectEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\PaymentStatusEnum;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\Init\InitPayoutRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\PaymentRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\PayTypeEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\TaxationEnum;
+use SergeyZatulivetrov\TinkoffAcquiring\Enum\VatEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\PaymentService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
@@ -50,36 +76,275 @@ class PaymentUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
-                // @phpcs:ignore
-                $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
-                $data['X509SerialNumber'] = '2613832945';
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'DigestValue' => 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=',
+                'SignatureValue' => 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j',
+                'X509SerialNumber' => '2613832945',
+            ]);
 
-                return $data;
-            });
-
-        $request = new InitPayoutRequest(
-            orderId: 'autoOrd1615285401068DELb',
-            amount: 1751,
-            cardId: '67321574',
-            data: [
+        $request = InitPayoutRequest::factory([
+            'OrderId' => 'autoOrd1615285401068DELb',
+            'Amount' => 1751,
+            'CardId' => '67321574',
+            'DATA' => [
                 'TestKey' => 'TestValue',
             ],
-        );
+        ]);
 
         $paymentService = new PaymentService(
-            terminalKey: 'TinkoffBankTest',
             signatureService: $signatureService,
             client: $client,
         );
 
         $response = $paymentService->init($request);
 
-        $this->assertEquals('PaymentTestN', $response->orderId);
-        $this->assertEquals(PaymentStatusEnum::Checked, $response->status);
-        $this->assertEquals('2353039', $response->paymentId);
-        $this->assertEquals(1231, $response->amount);
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(InitResponse::class, $response);
+        $this->assertEquals([
+            'Status' => 'CHECKED',
+            'PaymentId' => '2353039',
+            'OrderId' => 'PaymentTestN',
+            'Amount' => 1231
+        ], $response->toArray());
+    }
+
+    #[Test]
+    public function initPayment(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $client->method('execute')
+            ->willReturnCallback(function (string $action, array $data): array {
+                $this->assertEquals('Init', $action);
+                $this->assertEquals([
+                    'TerminalKey' => 'TinkoffBankTest',
+                    'Amount' => 140000,
+                    'OrderId' => '21090',
+                    'RedirectDueDate' => '2016-08-31T12:28:00+03:00',
+                    'Descriptor' => 'DescriptorValue',
+                    'Shops' => [
+                        [
+                            'ShopCode' => 'ShopCodeValue',
+                            'Amount' => 123456789,
+                            'Name' => 'NameValue',
+                            'Fee' => 'FeeValue',
+                        ]
+                    ],
+                    'Token' => 'c744b9711d978c152fb4546c6cdcec24ebd9870678f9f325a9713ca56d6a6826',
+                    'Description' => 'Подписка на 1400.00 рублей',
+                    'CustomerKey' => 'string',
+                    'Recurrent' => 'Y',
+                    'PayType' => 'O',
+                    'Language' => 'ru',
+                    'NotificationURL' => 'http://example.com/nURL',
+                    'SuccessURL' => 'http://example.com/sURL',
+                    'FailURL' => 'http://example.com/fURL',
+                    'DATA' => [
+                        'key' => 'value'
+                    ],
+                    'Receipt' => [
+                        'Items' => [
+                            [
+                                'Name' => 'name',
+                                'Price' => 123,
+                                'Quantity' => 0.22,
+                                'Amount' => 33,
+                                'PaymentMethod' => 'advance',
+                                'PaymentObject' => 'another',
+                                'Tax' => 'vat10',
+                                'Ean13' => 'ean13',
+                                'AgentData' => [
+                                    'AgentSign' => 'attorney',
+                                    'OperationName' => 'operationName',
+                                    'Phones' => ['phones'],
+                                    'ReceiverPhones' => ['receiverPhones'],
+                                    'TransferPhones' => ['transferPhones'],
+                                    'OperatorName' => 'operatorName',
+                                    'OperatorInn' => 'operatorInn',
+                                    'OperatorAddress' => 'operatorAddress',
+                                ],
+                                'SupplierInfo' => [
+                                    'Phones' => ['phones'],
+                                    'Name' => 'name',
+                                    'Inn' => 'inn'
+                                ],
+                                'DeclarationNumber' => 'declarationNumber',
+                                'UserData' => 'userData',
+                                'ShopCode' => 'shopCode',
+                                'MarkQuantity' => [
+                                    'Numerator' => 123,
+                                    'Denominator' => 432,
+                                ],
+                                'SectoralItemProps' => [
+                                    'FederalId' => 'federalId',
+                                    'Date' => 'date',
+                                    'Number' => 'number',
+                                    'Value' => 'value',
+                                ],
+                                'CountryCode' => 'countryCode',
+                                'Excise' => 'excise',
+                                'MarkCode' => [
+                                    'MarkCodeType' => 'EGAIS20',
+                                    'Value' => 'value',
+                                ],
+                                'MarkProcessingMode' => 'markProcessingMode',
+                                'MeasurementUnit' => 'measurementUnit',
+                            ]
+                        ],
+                        'FfdVersion' => '1.05',
+                        'Email' => 'EmailValue',
+                        'Phone' => 'PhoneValue',
+                        'Taxation' => 'osn',
+                        'Payments' => [
+                            'Cash' => 200,
+                            'Electronic' => 100,
+                            'AdvancePayment' => 300,
+                            'Credit' => 400,
+                            'Provision' => 500,
+                        ],
+                        'Customer' => 'CustomerValue',
+                        'CustomerInn' => 'CustomerInnValue',
+                        'ClientInfo' => [
+                            'Address' => 'AddressValue',
+                            'Birthdate' => 'BirthdateValue',
+                            'Citizenship' => 'CitizenshipValue',
+                            'DocumentCode' => 'DocumentCodeValue',
+                            'DocumentData' => 'DocumentDataValue',
+                        ],
+                    ]
+
+                ], $data);
+
+                return [
+                    'Status' => 'CHECKED',
+                    'PaymentId' => '2353039',
+                    'OrderId' => 'PaymentTestN',
+                    'Amount' => 1231,
+                    'PaymentURL' => 'paymentURL',
+                ];
+            });
+
+
+        $signatureService = $this->createMock(SignatureServiceInterface::class);
+
+        $signatureService->method('signedRequest')
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'Token' => 'c744b9711d978c152fb4546c6cdcec24ebd9870678f9f325a9713ca56d6a6826',
+            ]);
+
+        $request = InitPaymentRequest::factory([
+            'OrderId' => '21090',
+            'Amount' => 140000,
+            'DATA' => [
+                'key' => 'value',
+            ],
+            'Description' => 'Подписка на 1400.00 рублей',
+            'CustomerKey' => 'string',
+            'Recurrent' => 'Y',
+            'PayType' => 'O',
+            'Language' => 'ru',
+            'NotificationURL' => 'http://example.com/nURL',
+            'SuccessURL' => 'http://example.com/sURL',
+            'FailURL' => 'http://example.com/fURL',
+            'RedirectDueDate' => '2016-08-31T12:28:00+03:00',
+            'Receipt' => [
+                'Taxation' => 'osn',
+                'Items' => [
+                    [
+                        'Name' => 'name',
+                        'Quantity' => 0.22,
+                        'Amount' => 33,
+                        'Price' => 123,
+                        'Tax' => 'vat10',
+                        'PaymentMethod' => 'advance',
+                        'PaymentObject' => 'another',
+                        'Ean13' => 'ean13',
+                        'AgentData' => [
+                            'AgentSign' => 'attorney',
+                            'OperationName' => 'operationName',
+                            'Phones' => ['phones'],
+                            'ReceiverPhones' => ['receiverPhones'],
+                            'TransferPhones' => ['transferPhones'],
+                            'OperatorName' => 'operatorName',
+                            'OperatorInn' => 'operatorInn',
+                            'OperatorAddress' => 'operatorAddress',
+                        ],
+                        'SupplierInfo' => [
+                            'Phones' => ['phones'],
+                            'Name' => 'name',
+                            'Inn' => 'inn',
+                        ],
+                        'MarkQuantity' => [
+                            'Numerator' => 123,
+                            'Denominator' => 432,
+                        ],
+                        'SectoralItemProps' => [
+                            'FederalId' => 'federalId',
+                            'Date' => 'date',
+                            'Number' => 'number',
+                            'Value' => 'value',
+                        ],
+                        'CountryCode' => 'countryCode',
+                        'DeclarationNumber' => 'declarationNumber',
+                        'Excise' => 'excise',
+                        'MarkCode' => [
+                            'MarkCodeType' => 'EGAIS20',
+                            'Value' => 'value',
+                        ],
+                        'MarkProcessingMode' => 'markProcessingMode',
+                        'MeasurementUnit' => 'measurementUnit',
+                        'ShopCode' => 'shopCode',
+                        'UserData' => 'userData',
+                    ]
+                ],
+                'FfdVersion' => '1.05',
+                'Email' => 'EmailValue',
+                'Phone' => 'PhoneValue',
+                'Payments' => [
+                    'Electronic' => 100,
+                    'Cash' => 200,
+                    'AdvancePayment' => 300,
+                    'Credit' => 400,
+                    'Provision' => 500,
+                ],
+                'Customer' => 'CustomerValue',
+                'CustomerInn' => 'CustomerInnValue',
+                'ClientInfo' => [
+                    'Birthdate' => 'BirthdateValue',
+                    'Citizenship' => 'CitizenshipValue',
+                    'DocumentCode' => 'DocumentCodeValue',
+                    'DocumentData' => 'DocumentDataValue',
+                    'Address' => 'AddressValue',
+                ],
+            ],
+            'Shops' => [
+                [
+                    'ShopCode' => 'ShopCodeValue',
+                    'Amount' => 123456789,
+                    'Name' => 'NameValue',
+                    'Fee' => 'FeeValue',
+                ]
+            ],
+            'Descriptor' => 'DescriptorValue',
+        ]);
+
+        $paymentService = new PaymentService(
+            signatureService: $signatureService,
+            client: $client,
+        );
+
+        $response = $paymentService->init($request);
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(InitResponse::class, $response);
+        $this->assertEquals([
+            'Status' => 'CHECKED',
+            'PaymentId' => '2353039',
+            'OrderId' => 'PaymentTestN',
+            'Amount' => 1231,
+            'PaymentURL' => 'paymentURL',
+        ], $response->toArray());
     }
 
     #[Test]
@@ -108,30 +373,31 @@ class PaymentUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
-                // @phpcs:ignore
-                $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
-                $data['X509SerialNumber'] = '2613832945';
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'DigestValue' => 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=',
+                'SignatureValue' => 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j',
+                'X509SerialNumber' => '2613832945',
+            ]);
 
-                return $data;
-            });
-
-        $request = new PaymentRequest(
-            paymentId: '700000085140',
-        );
+        $request = PaymentRequest::factory([
+            'PaymentId' => '700000085140',
+        ]);
 
         $paymentService = new PaymentService(
-            terminalKey: 'TinkoffBankTest',
             signatureService: $signatureService,
             client: $client,
         );
 
         $response = $paymentService->payment($request);
 
-        $this->assertEquals('21050', $response->orderId);
-        $this->assertEquals(PaymentStatusEnum::Completed, $response->status);
-        $this->assertEquals('10063', $response->paymentId);
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(PaymentResponse::class, $response);
+        $this->assertEquals([
+            'OrderId' => '21050',
+            'Status' => 'COMPLETED',
+            'PaymentId' => '10063',
+        ], $response->toArray());
     }
 
     #[Test]
@@ -148,6 +414,7 @@ class PaymentUnitTest extends TestCase
                     'DigestValue' => 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=',
                     'SignatureValue' => 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j',
                     'X509SerialNumber' => '2613832945',
+                    'IP' => '128.0.0.8',
 
                 ], $data);
 
@@ -162,30 +429,32 @@ class PaymentUnitTest extends TestCase
         $signatureService = $this->createMock(SignatureServiceInterface::class);
 
         $signatureService->method('signedRequest')
-            ->willReturnCallback(function (array $data): array {
-                $data['DigestValue'] = 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=';
-                // @phpcs:ignore
-                $data['SignatureValue'] = 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j';
-                $data['X509SerialNumber'] = '2613832945';
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'DigestValue' => 'qfeohMmrsEvr4QPB8CeZETb+W6VDEGnMrf+oVjvSaMU=',
+                'SignatureValue' => 'rNTloWBbTsid1n9B1ANZ9/VasWJyg6jfiMeI12ERBSlOnzy6YFqMaa5nRb9ZrK9wbKimIBD70v8j',
+                'X509SerialNumber' => '2613832945',
+            ]);
 
-                return $data;
-            });
-
-        $request = new StateRequest(
-            paymentId: '700000085101',
-        );
+        $request = StateRequest::factory([
+            'PaymentId' => '700000085101',
+            'IP' => '128.0.0.8',
+        ]);
 
         $paymentService = new PaymentService(
-            terminalKey: 'TinkoffBankTest',
             signatureService: $signatureService,
             client: $client,
         );
 
         $response = $paymentService->state($request);
 
-        $this->assertEquals('21057', $response->orderId);
-        $this->assertEquals(PaymentStatusEnum::Confirmed, $response->status);
-        $this->assertEquals('2304882', $response->paymentId);
-        $this->assertEquals(1751, $response->amount);
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(StateResponse::class, $response);
+        $this->assertEquals([
+            'OrderId' => '21057',
+            'Status' => 'CONFIRMED',
+            'PaymentId' => '2304882',
+            'Amount' => 1751,
+        ], $response->toArray());
     }
 }

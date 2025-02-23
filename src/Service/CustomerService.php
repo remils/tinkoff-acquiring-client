@@ -7,12 +7,12 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Customer\AddCustomerRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Customer\CustomerRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Customer\RemoveCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\AddCustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\CustomerResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Customer\RemoveCustomerResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\AddCustomerRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\CustomerRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Request\Customer\RemoveCustomerRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
@@ -23,12 +23,10 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 class CustomerService
 {
     /**
-     * @param string $terminalKey
      * @param SignatureServiceInterface<TSignatureData> $signatureService
      * @param ClientInterface $client
      */
     public function __construct(
-        protected readonly string $terminalKey,
         protected readonly SignatureServiceInterface $signatureService,
         protected readonly ClientInterface $client,
     ) {
@@ -40,15 +38,19 @@ class CustomerService
      * при передаче параметра CustomerKey в методе Init. Это можно использовать для сохранения
      * и последующего отображения клиенту замаскированного номера карты, по которой будет
      * совершен рекуррентный платеж
-     * @param AddCustomerRequest<TSignatureData> $request
+     * @param AddCustomerRequest $request
      * @return AddCustomerResponse
      * @throws TinkoffException|HttpException
      */
     public function addCustomer(AddCustomerRequest $request): AddCustomerResponse
     {
+        $data = $request->toArray();
+
+        $signatureData = $this->signatureService->signedRequest($data);
+
         $response = $this->client->execute(
             action: 'AddCustomer',
-            data: $request->build($this->terminalKey, $this->signatureService),
+            data: array_merge($signatureData, $data),
         );
 
         return AddCustomerResponse::factory($response);
@@ -56,15 +58,19 @@ class CustomerService
 
     /**
      * Возвращает данные клиента, сохраненные в связке с терминалом
-     * @param CustomerRequest<TSignatureData> $request
+     * @param CustomerRequest $request
      * @return CustomerResponse
      * @throws TinkoffException|HttpException
      */
     public function customer(CustomerRequest $request): CustomerResponse
     {
+        $data = $request->toArray();
+
+        $signatureData = $this->signatureService->signedRequest($data);
+
         $response = $this->client->execute(
             action: 'GetCustomer',
-            data: $request->build($this->terminalKey, $this->signatureService),
+            data: array_merge($signatureData, $data),
         );
 
         return CustomerResponse::factory($response);
@@ -72,15 +78,19 @@ class CustomerService
 
     /**
      * Удаляет сохраненные данные клиента
-     * @param RemoveCustomerRequest<TSignatureData> $request
+     * @param RemoveCustomerRequest $request
      * @return RemoveCustomerResponse
      * @throws TinkoffException|HttpException
      */
     public function removeCustomer(RemoveCustomerRequest $request): RemoveCustomerResponse
     {
+        $data = $request->toArray();
+
+        $signatureData = $this->signatureService->signedRequest($data);
+
         $response = $this->client->execute(
             action: 'RemoveCustomer',
-            data: $request->build($this->terminalKey, $this->signatureService),
+            data: array_merge($signatureData, $data),
         );
 
         return RemoveCustomerResponse::factory($response);

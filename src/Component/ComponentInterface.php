@@ -11,7 +11,7 @@ interface ComponentInterface
 {
     /**
      * @param T $data
-     * @return self
+     * @return ComponentInterface<T>
      */
     public static function factory(array $data): self;
 

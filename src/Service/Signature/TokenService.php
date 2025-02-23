@@ -9,19 +9,21 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 /**
  * TokenService
  *
- * @phpstan-type TSignatureData array{
- *      Token: string
+ * @phpstan-type T array{
+ *      TerminalKey: string,
+ *      Token:       string
  * }
- *
- * @implements SignatureServiceInterface<TSignatureData>
+ * @phpstan-implements SignatureServiceInterface<T>
  */
 class TokenService implements SignatureServiceInterface
 {
     /**
-     * @param string $password Секретный ключ терминала
+     * @param string   $terminalKey        Идентификатор терминала
+     * @param string   $password           Секретный ключ терминала
      * @param string[] $excludedProperties Свойства запроса, которые будут исключены при генерации подписи
      */
     public function __construct(
+        protected readonly string $terminalKey,
         protected readonly string $password,
         protected readonly array $excludedProperties = [
             'Receipt',
@@ -35,18 +37,26 @@ class TokenService implements SignatureServiceInterface
      */
     public function signedRequest(array $data): array
     {
-        return [
-            ...$data,
-            'Token' => $this->getToken($data),
-        ];
+        /**
+         * @var T
+         */
+        $signatureData = [];
+
+        $signatureData['TerminalKey'] = $this->terminalKey;
+        $signatureData['Token']       = $this->getToken(array_merge(
+            [
+                'TerminalKey' => $this->terminalKey,
+            ],
+            $data,
+        ));
+
+        return $signatureData;
     }
 
     /**
      * Генерация токена
      *
-     * @template TData of array<string,mixed>
-     *
-     * @param TData $data
+     * @param array<string,mixed> $data
      * @return string
      */
     protected function getToken(array $data): string

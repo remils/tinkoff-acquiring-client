@@ -15,10 +15,8 @@ interface ClientInterface
     /**
      * Метод должен выполнять POST запрос
      *
-     * @template TData of array<string,mixed>
-     *
      * @param string $action
-     * @param TData $data
+     * @param array<string,mixed> $data
      *
      * @throws HttpException|TinkoffException
      *

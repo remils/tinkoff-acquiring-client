@@ -43,32 +43,26 @@ a8RAxBp4DaVrnMG2q0B9kV8=
 -----END PRIVATE KEY-----";
 
         $service = new CertificateService(
+            terminalKey: 'TestBank',
             serialNumber: 'TestSerialNumber',
             privateKey: $privateKey,
-            excludedProperties: ['Data']
+            excludedProperties: ['DATA']
         );
 
-        $data = [
-            'TerminalKey' => 'TestBank',
-            'Data' => [
-                'Email' => 'test@mail.loc',
-            ],
-        ];
-
-        $data = $service->signedRequest($data);
-
         $this->assertEquals([
+            'TerminalKey'      => 'TestBank',
             'X509SerialNumber' => 'TestSerialNumber',
-            'DigestValue' => 'Ao/gPAlaGsJ7FBib+iLbAUR57gatHfzK57xKGCKNXhM=',
-            'SignatureValue' => 'hZPMNjsrI5lkRso1aOW/t7T3Yt7wHRsnneuOVNW9nL8YJ5bNFWuNMEADalAQPrJ22IvBzc6D9JF9' .
-                                'F27XHgeFtdNO76aJ6ZPC/Q7eqRemp5SyOuYC3rOhk19H+TUKxCRp8K5QZfhnlx0zMN5w5J5CTb8C' .
-                                'k3bKAFykN4XQgC2QtRL9Vp242K5zeWaanNxKyU+ceZSizR5zLJzYIHMuE2tlx8khpPiUmL1mi6DQ' .
-                                'YI0ARjHdgH9rRxd5Vw9tMCXVDJaocdLDfxw6ZhxnFGDwdlOxFMwVxt3t6zSlL27znvPeVhPj8OHG' .
-                                'RB6Es/qgc0kd19mLUZvi+64Rts3xfR9bZkgzUw==',
-            'TerminalKey' => 'TestBank',
-            'Data' => [
+            'DigestValue'      => 'Ml6k3HZY88voGlpri22LS4Ve1DpFZBCFFXu014pthnE=',
+            'SignatureValue'   => 'eX1JFMCPAofaBynb8MI2lPoUjtnj84hVrpqgRswYQVHKx98dXdtzvuNhBDBhZ8QOdr0DwFpPXF/Zkc' .
+                                  '3YDqZG8dGCfU7v7iOUmNIBEzlGtqwFPjL+RtwVDtRplsoOZhDF4jaeDrbII2eEIeaVc20IPpzOdqBN' .
+                                  'vFN0FTWvU9fiklh6mPNz1pexK765okeO+Ji56VR4RN/Jchc5C13U6WyF0U/PXe3/H6a0ow3KpdFd1U' .
+                                  'WHeUnnbqh0nG4HJxUgNy7Fd25fhnaR7/Xtf2ARiuvb1weoAXHzWczqcTH8UE1xdnoq4u/WOfAvDFCN' .
+                                  '3vKpOeKAuLHKMni4mqOiSwhHLUWNHg=='
+        ], $service->signedRequest([
+            'Amount' => 123,
+            'DATA' => [
                 'Email' => 'test@mail.loc',
             ],
-        ], $data);
+        ]));
     }
 }
