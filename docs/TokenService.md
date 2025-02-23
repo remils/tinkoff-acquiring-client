@@ -9,12 +9,12 @@
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\TokenService;
 
 $service = new TokenService(
+    terminalKey: 'TestBank',
     password: 'Password',
     excludedProperties: ['Items'], // названия ключей массива которые не должны участвовать в генерации токена
 );
 
 $data = [
-    'TerminalKey' => 'TestBank',
     'Items' => [1,2,3,4,5],
 ];
 

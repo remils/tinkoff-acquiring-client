@@ -51,7 +51,7 @@ class CurlClient implements ClientInterface
             "Accept: application/json",
             "Content-Type: application/json",
             "Content-Length: {$contentLength}",
-            "User-Agent: SergeyZatulivetrov/TinkoffAcquiring 4.0.0",
+            "User-Agent: SergeyZatulivetrov/TinkoffAcquiring CURL 4.0.0",
             "Connection: Close",
         ]);
 

@@ -124,7 +124,7 @@ class SocketClient implements ClientInterface
             . "Accept: application/json\r\n"
             . "Content-Type: application/json\r\n"
             . "Content-Length: {$contentLength}\r\n"
-            . "User-Agent: SergeyZatulivetrov/TinkoffAcquiring 4.0.0\r\n"
+            . "User-Agent: SergeyZatulivetrov/TinkoffAcquiring SOCKET 4.0.0\r\n"
             . "Connection: Close\r\n"
             . "\r\n"
             . $content;

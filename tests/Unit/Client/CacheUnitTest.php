@@ -9,8 +9,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use SergeyZatulivetrov\TinkoffAcquiring\Client\CacheWrapperClient;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Wrapper\CacheWrapper;
 
 class CacheUnitTest extends TestCase
 {
@@ -62,7 +62,7 @@ class CacheUnitTest extends TestCase
             ];
         });
 
-        $cacheWrapperClient = new CacheWrapperClient(
+        $cacheWrapperClient = new CacheWrapper(
             client: $client,
             cache: $cache,
             expiresAfter: new DateInterval('PT30M'),
@@ -105,7 +105,7 @@ class CacheUnitTest extends TestCase
 
         $client = $this->createMock(ClientInterface::class);
 
-        $cacheWrapperClient = new CacheWrapperClient(
+        $cacheWrapperClient = new CacheWrapper(
             client: $client,
             cache: $cache,
         );

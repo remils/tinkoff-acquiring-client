@@ -36,6 +36,10 @@ composer require sergey-zatulivetrov/tinkoff-acquiring-client
 
 [Кеширование ответов клиента](./docs/Cache.md)
 
+[Логирование запросов и ответов клиента](./docs/Log.md)
+
+[Композиция оберток над клиентом](./docs/ComposeWrapper.md)
+
 [Подписание запросов с помощью токен ключа](./docs/TokenService.md)
 
 [Подписание запросов с помощью цифрового сертификата](./docs/CertificateService.md)

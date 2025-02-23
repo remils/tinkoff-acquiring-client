@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace SergeyZatulivetrov\TinkoffAcquiring\Client;
+namespace SergeyZatulivetrov\TinkoffAcquiring\Client\Wrapper;
 
 use DateInterval;
 use Psr\Cache\CacheItemPoolInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 
 /**
- * CacheWrapperClient
+ * CacheWrapper
  *
  * Клиент обернутый кешированием.
  * Основная задача клиента: снизить количество одинаковых обращений к сервису.
  *
  * @see https://symfony.com/doc/current/components/cache.html
  */
-class CacheWrapperClient implements ClientInterface
+class CacheWrapper implements ClientInterface
 {
     /**
      * @param ClientInterface $client

@@ -38,13 +38,13 @@ a8RAxBp4DaVrnMG2q0B9kV8=
 -----END PRIVATE KEY-----";
 
 $service = new CertificateService(
+    terminalKey: 'TestBank',
     serialNumber: 'TestSerialNumber', // передаем серийный номер сертификата полученный от Мерчанта
     privateKey: $privateKey,
     excludedProperties: ['Data'] // ключи массива которые не участвуют в генерации подписи
 );
 
 $data = [
-    'TerminalKey' => 'TestBank',
     'Data' => [
         'Email' => 'test@mail.loc',
     ],

@@ -1,18 +1,23 @@
-# Кеширование ответов клиента
+# Композиция оберток
 
-Для кеширования реализована обертка над PSR-Cache.
-
-[DateInterval](https://www.php.net/manual/ru/dateinterval.construct.php) используется для установки времени жизни кеша.
+Если требуется обернуть в кеш и также включить логирование:
 
 ```php
 use SergeyZatulivetrov\TinkoffAcquiring\Client\SocketClient;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Wrapper\CacheWrapper;
+use SergeyZatulivetrov\TinkoffAcquiring\Client\Wrapper\LoggerWrapper;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @var CacheItemPoolInterface $cache
  */
 $cache = ...;
+
+/**
+ * @var LoggerInterface $logger
+ */
+$logger = ...;
 
 $client = new SocketClient(
     host: 'securepay.tinkoff.ru',
@@ -28,5 +33,10 @@ $cacheWrapper = new CacheWrapper(
     expiresAfter: new DateInterval('PT30M'),
 );
 
-$cacheWrapper->execute($action, $data);
+$loggerWrapper = new LoggerWrapper(
+    client: $cacheWrapper,
+    logger: $logger,
+);
+
+$loggerWrapper->execute($action, $data);
 ```
