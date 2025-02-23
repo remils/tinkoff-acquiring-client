@@ -44,6 +44,8 @@ composer require sergey-zatulivetrov/tinkoff-acquiring-client
 
 [Подписание запросов с помощью цифрового сертификата](./docs/CertificateService.md)
 
+[Сервис управления картами пользователя](./docs/Card.md)
+
 ## Развитие
 
 Нашел баг? Делай PullRequest!
