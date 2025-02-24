@@ -1,17 +1,13 @@
 # Управление картами пользователя
 
 ```php
-use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\TokenService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\CardService;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\CardListRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\RemoveCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\CheckTypeEnum;
 
-$signatureService = new TokenService(
-    terminalKey: 'TestBank',
-    password: 'Password',
-);
+
 
 $service = new CardService(
     signatureService: $signatureService,

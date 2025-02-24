@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Tests\Unit\Service;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use SergeyZatulivetrov\TinkoffAcquiring\Component\Card;
-use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardTypeEnum;
-use SergeyZatulivetrov\TinkoffAcquiring\Enum\CheckTypeEnum;
-use SergeyZatulivetrov\TinkoffAcquiring\Enum\CardStatusEnum;
-use SergeyZatulivetrov\TinkoffAcquiring\Service\CardService;
+use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\ComponentInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\AddCardRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\CardListRequest;
-use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\RemoveCardRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\CardListResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\RemoveCardResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Service\CardService;
 use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 class CardUnitTest extends TestCase
