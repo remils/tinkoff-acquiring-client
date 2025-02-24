@@ -30,7 +30,7 @@ class LoggerUnitTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         // @phpcs:ignore
         $logger->method('debug')->willReturnCallback(function (string $message, array $context) use ($expectedMessageList, $expectedContextList) {
-            $this->assertEquals($expectedMessageList->current(), $message);
+            $this->assertStringMatchesFormat($expectedMessageList->current(), $message);
             $this->assertEquals($expectedContextList->current(), $context);
             $expectedMessageList->next();
             $expectedContextList->next();
@@ -46,8 +46,8 @@ class LoggerUnitTest extends TestCase
 
     protected function expectedMessageList(): Generator
     {
-        yield 'TINKOFF_ACQUIRING: request "Action"';
-        yield 'TINKOFF_ACQUIRING: response "Action"';
+        yield 'SergeyZatulivetrov.TinkoffAcquiring.%s: request "Action"';
+        yield 'SergeyZatulivetrov.TinkoffAcquiring.%s: response "Action"';
     }
 
     protected function expectedContextList(): Generator

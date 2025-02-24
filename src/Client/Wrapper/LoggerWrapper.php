@@ -20,11 +20,13 @@ class LoggerWrapper implements ClientInterface
 
     public function execute(string $action, array $data): mixed
     {
-        $this->logger->debug(sprintf('TINKOFF_ACQUIRING: request "%s"', $action), $data);
+        $uniqid = uniqid('SergeyZatulivetrov.TinkoffAcquiring.');
+
+        $this->logger->debug(sprintf('%s: request "%s"', $uniqid, $action), $data);
 
         $response = $this->client->execute($action, $data);
 
-        $this->logger->debug(sprintf('TINKOFF_ACQUIRING: response "%s"', $action), $response);
+        $this->logger->debug(sprintf('%s: response "%s"', $uniqid, $action), $response);
 
         return $response;
     }
