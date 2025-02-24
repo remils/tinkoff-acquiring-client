@@ -27,7 +27,7 @@
 Чтобы установить пакет в проект, требуется выполнить команду:
 
 ```ssh
-composer require sergey-zatulivetrov/tinkoff-acquiring-client
+composer require sergey-zatulivetrov/tinkoff-acquiring-client:^4.0
 ```
 
 Знакомимся с сервисами:
