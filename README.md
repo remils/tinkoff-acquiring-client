@@ -48,6 +48,8 @@ composer require sergey-zatulivetrov/tinkoff-acquiring-client:^4.0
 
 [Сервис управления картами пользователя](./docs/Card.md)
 
+[Сервис работы с платежами и выплатами](./docs/Payment.md)
+
 ## Развитие
 
 Нашел баг? Делай PullRequest!
