@@ -45,12 +45,7 @@ class CertificateService implements SignatureServiceInterface
          */
         $signatureData = [];
 
-        $hashBinary = $this->getHashBinary(array_merge(
-            [
-                'TerminalKey' => $this->terminalKey,
-            ],
-            $data,
-        ));
+        $hashBinary = $this->getHashBinary($data);
 
         $signatureData['TerminalKey']      = $this->terminalKey;
         $signatureData['X509SerialNumber'] = $this->serialNumber;
@@ -93,6 +88,8 @@ class CertificateService implements SignatureServiceInterface
                 }
             }
         }
+
+        $data['TerminalKey'] = $this->terminalKey;
 
         ksort($data, SORT_STRING);
 

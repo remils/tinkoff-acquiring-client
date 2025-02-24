@@ -32,9 +32,6 @@ class TokenService implements SignatureServiceInterface
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function signedRequest(array $data): array
     {
         /**
@@ -43,12 +40,7 @@ class TokenService implements SignatureServiceInterface
         $signatureData = [];
 
         $signatureData['TerminalKey'] = $this->terminalKey;
-        $signatureData['Token']       = $this->getToken(array_merge(
-            [
-                'TerminalKey' => $this->terminalKey,
-            ],
-            $data,
-        ));
+        $signatureData['Token']       = $this->getToken($data);
 
         return $signatureData;
     }
@@ -69,6 +61,7 @@ class TokenService implements SignatureServiceInterface
             }
         }
 
+        $data['TerminalKey'] = $this->terminalKey;
         $data['Password'] = $this->password;
 
         ksort($data, SORT_STRING);

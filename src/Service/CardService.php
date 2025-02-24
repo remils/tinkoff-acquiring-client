@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
-use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\AddCardRequest;
@@ -13,25 +12,15 @@ use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Card\RemoveCardRequest
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\AddCardResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\CardListResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Card\RemoveCardResponse;
-use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterface;
 
 /**
  * CardService
  *
  * @phpstan-template TSignatureData of array<string,string>
+ * @phpstan-extends AbstractService<TSignatureData>
  */
-class CardService
+class CardService extends AbstractService
 {
-    /**
-     * @param SignatureServiceInterface<TSignatureData> $signatureService
-     * @param ClientInterface $client
-     */
-    public function __construct(
-        protected readonly SignatureServiceInterface $signatureService,
-        protected readonly ClientInterface $client,
-    ) {
-    }
-
     /**
      * Сохраняет карту клиента. В случае успешной привязки переадресует клиента на Success Add Card URL,
      * а в противном случае на Fail Add Card URL
@@ -41,13 +30,9 @@ class CardService
      */
     public function addCard(AddCardRequest $request): AddCardResponse
     {
-        $data = $request->toArray();
-
-        $signatureData = $this->signatureService->signedRequest($data);
-
         $response = $this->client->execute(
             action: 'AddCard',
-            data: array_merge($signatureData, $data),
+            data: $this->signedRequest($request->toArray()),
         );
 
         return AddCardResponse::factory($response);
@@ -61,13 +46,9 @@ class CardService
      */
     public function cardList(CardListRequest $request): CardListResponse
     {
-        $data = $request->toArray();
-
-        $signatureData = $this->signatureService->signedRequest($data);
-
         $response = $this->client->execute(
             action: 'GetCardList',
-            data: array_merge($signatureData, $data),
+            data: $this->signedRequest($request->toArray()),
         );
 
         return CardListResponse::factory($response);
@@ -81,13 +62,9 @@ class CardService
      */
     public function removeCard(RemoveCardRequest $request): RemoveCardResponse
     {
-        $data = $request->toArray();
-
-        $signatureData = $this->signatureService->signedRequest($data);
-
         $response = $this->client->execute(
             action: 'RemoveCard',
-            data: array_merge($signatureData, $data),
+            data: $this->signedRequest($request->toArray()),
         );
 
         return RemoveCardResponse::factory($response);

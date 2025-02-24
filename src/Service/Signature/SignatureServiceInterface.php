@@ -14,7 +14,7 @@ interface SignatureServiceInterface
     /**
      * Возвращает подписанный запрос
      *
-     * @param array<mixed> $data
+     * @param array<string,mixed> $data
      * @return T
      */
     public function signedRequest(array $data): array;
