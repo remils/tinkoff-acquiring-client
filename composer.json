@@ -5,6 +5,7 @@
     "description": "Client for working with Tinkoff's acquiring REST API",
     "keywords": [
         "tinkoff",
+        "tbank",
         "acquiring",
         "credit card",
         "client"
@@ -26,7 +27,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": "^8.1",
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-mbstring": "*",
