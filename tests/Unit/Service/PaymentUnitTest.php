@@ -8,10 +8,12 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\ComponentInterface;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ChargeRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPayoutRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ChargeResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
@@ -20,6 +22,69 @@ use SergeyZatulivetrov\TinkoffAcquiring\Service\Signature\SignatureServiceInterf
 
 class PaymentUnitTest extends TestCase
 {
+    #[Test]
+    public function charge(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $client->method('execute')
+            ->willReturnCallback(function (string $action, array $data): array {
+                $this->assertEquals('Charge', $action);
+                $this->assertEquals([
+                    'TerminalKey' => 'TinkoffBankTest',
+                    'PaymentId' => '700001702044',
+                    'RebillId' => '145919',
+                    'Token' => 'f5a3be479324a6d3a4d9efa0d02880b77d04a91758deddcbd9e752a6df97cab5',
+                    'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+                    'SendEmail' => true,
+                    'InfoEmail' => 'customer@test.com',
+                ], $data);
+
+                return [
+                    'TerminalKey' => 'TinkoffBankTest',
+                    'Amount' => 100000,
+                    'OrderId' => '21050',
+                    'Success' => true,
+                    'Status' => 'NEW',
+                    'PaymentId' => '13660',
+                    'ErrorCode' => '0',
+                ];
+            });
+
+        $signatureService = $this->createMock(SignatureServiceInterface::class);
+
+        $signatureService->method('signedRequest')
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'Token' => 'f5a3be479324a6d3a4d9efa0d02880b77d04a91758deddcbd9e752a6df97cab5',
+            ]);
+
+        $request = ChargeRequest::factory([
+            'PaymentId' => '700001702044',
+            'RebillId' => '145919',
+            'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+            'SendEmail' => true,
+            'InfoEmail' => 'customer@test.com',
+        ]);
+
+        $paymentService = new PaymentService(
+            signatureService: $signatureService,
+            client: $client,
+        );
+
+        $response = $paymentService->charge($request);
+
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(ChargeResponse::class, $response);
+        $this->assertEquals([
+            'Amount' => 100000,
+            'OrderId' => '21050',
+            'Status' => 'NEW',
+            'PaymentId' => '13660',
+        ], $response->toArray());
+    }
+
+
     #[Test]
     public function initPayout(): void
     {

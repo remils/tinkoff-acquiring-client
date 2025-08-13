@@ -6,9 +6,11 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ChargeRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitRequestInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ChargeResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
@@ -68,5 +70,23 @@ class PaymentService extends AbstractService
         );
 
         return StateResponse::factory($response);
+    }
+
+    /**
+     * Автоплатеж
+     *
+     * Обращение к этому методу происходит после инициализации оплаты.
+     * @param ChargeRequest $request
+     * @return ChargeResponse
+     * @throws TinkoffException|HttpException
+     */
+    public function charge(ChargeRequest $request): ChargeResponse
+    {
+        $response = $this->client->execute(
+            action: 'Charge',
+            data: $this->signedRequest($request->toArray()),
+        );
+
+        return ChargeResponse::factory($response);
     }
 }

@@ -11,7 +11,8 @@ use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\Receipt;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Receipt\ReceiptItem;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\TaxationEnum;
 use SergeyZatulivetrov\TinkoffAcquiring\Enum\VatEnum;
-
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ChargeRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ChargeResponse;
 
 
 $paymentService = new PaymentService(
@@ -99,6 +100,26 @@ $request = new InitPaymentRequest(
     ),
 );
 $response = $paymentService->init($request);
+
+
+
+// автоплатеж
+$request = ChargeRequest::factory([
+    'PaymentId' => '700001702044',
+    'RebillId' => '145919',
+    'IP' => '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+    'SendEmail' => true,
+    'InfoEmail' => 'customer@test.com',
+]);
+// или
+$request = new ChargeRequest(
+    paymentId: '700001702044',
+    rebillId: '145919',
+    ip: '2011:0db8:85a3:0101:0101:8a2e:0370:7334',
+    sendEmail: true,
+    infoEmail: 'customer@test.com',
+);
+$response = $paymentService->charge($request);
 
 
 
