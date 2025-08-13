@@ -9,11 +9,13 @@ use PHPUnit\Framework\TestCase;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Contract\ClientInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\ComponentInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ChargeRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ConfirmRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitPayoutRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\StateRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ChargeResponse;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ConfirmResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
@@ -498,6 +500,254 @@ class PaymentUnitTest extends TestCase
             'Status' => 'CONFIRMED',
             'PaymentId' => '2304882',
             'Amount' => 1751,
+        ], $response->toArray());
+    }
+
+    #[Test]
+    public function confirm(): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $client->method('execute')
+            ->willReturnCallback(function (string $action, array $data): array {
+                $this->assertEquals('Confirm', $action);
+                $this->assertEquals([
+                    'TerminalKey' => 'TinkoffBankTest',
+                    'PaymentId' => '2304882',
+                    'Token' => 'c0ad1dfc4e94ed44715c5ed0e84f8ec439695b9ac219a7a19555a075a3c3ed24',
+                    'IP' => '192.168.255.255',
+                    'Amount' => 19200,
+                    'Receipt' => [
+                        'FfdVersion' => 'string',
+                        'ClientInfo' => [
+                            'Birthdate' => 'string',
+                            'Citizenship' => 'string',
+                            'DocumentCode' => '21',
+                            'DocumentData' => 'string',
+                            'Address' => 'string'
+                        ],
+                        'Taxation' => 'osn',
+                        'Email' => 'a@test.ru',
+                        'Phone' => '+79031234567',
+                        'Customer' => '78894325',
+                        'CustomerInn' => '788621292',
+                        'Items' => [
+                            [
+                                'AgentData' => [
+                                    'AgentSign' => 'paying_agent',
+                                    'OperationName' => 'Позиция чека',
+                                    'Phones' => [
+                                    '+790912312398'
+                                    ],
+                                    'ReceiverPhones' => [
+                                        '+79221210697',
+                                        '+79098561231'
+                                    ],
+                                    'TransferPhones' => [
+                                        '+79221210697'
+                                    ],
+                                    'OperatorName' => 'Tinkoff',
+                                    'OperatorAddress' => 'г. Тольятти',
+                                    'OperatorInn' => '7710140679'
+                                ],
+                                'SupplierInfo' => [
+                                    'Phones' => [
+                                        '+79221210697',
+                                        '+79098561231'
+                                    ],
+                                    'Name' => 'ООО Вендор товара',
+                                    'Inn' => '7710140679'
+                                ],
+                                'Name' => 'Наименование товара 1',
+                                'Price' => 10000,
+                                'Quantity' => 1,
+                                'Amount' => 10000,
+                                'Tax' => 'vat10',
+                                'PaymentMethod' => 'full_payment',
+                                'PaymentObject' => 'agent_commission',
+                                'UserData' => 'Данные пользователя ext.test.qa@tinkoff.ru',
+                                'Excise' => '12.2',
+                                'CountryCode' => '056',
+                                'DeclarationNumber' => '12345678901',
+                                'MeasurementUnit' => 'шт',
+                                'MarkProcessingMode' => 'string',
+                                'MarkCode' => [
+                                    'MarkCodeType' => 'EAN8',
+                                    'Value' => '12345678'
+                                ],
+                                'MarkQuantity' => [
+                                    'Numerator' => 1,
+                                    'Denominator' => 2
+                                ],
+                                'SectoralItemProps' => [
+                                    'FederalId' => '001',
+                                    'Date' => '21.11.2020',
+                                    'Number' => '123/43',
+                                    'Value' => 'test value SectoralItemProps'
+                                ]
+                            ]
+                        ],
+                        'Payments' => [
+                            'Cash' => 90000,
+                            'Electronic' => 50000,
+                            'AdvancePayment' => 0,
+                            'Credit' => 0,
+                            'Provision' => 0
+                        ]
+                    ],
+                    'Shops' => [
+                        [
+                            'ShopCode' => '700456',
+                            'Amount' => 10000,
+                            'Name' => 'Товар',
+                            'Fee' => '500'
+                        ]
+                    ],
+                    'Route' => 'BNPL',
+                    'Source' => 'BNPL',
+                ], $data);
+
+                return [
+                    'TerminalKey' => 'TinkoffBankTest',
+                    'OrderId' => '21057',
+                    'Success' => true,
+                    'Status' => 'CONFIRMED',
+                    'PaymentId' => '2304882',
+                    'ErrorCode' => '0',
+                    'Message' => 'OK',
+                    'Details' => 'None',
+                    'Params' => [
+                        [
+                            'Key' => 'Route',
+                            'Value' => 'ACQ',
+                        ],
+                    ],
+                ];
+            });
+
+
+
+        $signatureService = $this->createMock(SignatureServiceInterface::class);
+
+        $signatureService->method('signedRequest')
+            ->willReturn([
+                'TerminalKey' => 'TinkoffBankTest',
+                'Token' => 'c0ad1dfc4e94ed44715c5ed0e84f8ec439695b9ac219a7a19555a075a3c3ed24',
+            ]);
+
+        $request = ConfirmRequest::factory([
+            'PaymentId' => '2304882',
+            'IP' => '192.168.255.255',
+            'Amount' => 19200,
+            'Receipt' => [
+                'FfdVersion' => 'string',
+                'ClientInfo' => [
+                    'Birthdate' => 'string',
+                    'Citizenship' => 'string',
+                    'DocumentCode' => '21',
+                    'DocumentData' => 'string',
+                    'Address' => 'string'
+                ],
+                'Taxation' => 'osn',
+                'Email' => 'a@test.ru',
+                'Phone' => '+79031234567',
+                'Customer' => '78894325',
+                'CustomerInn' => '788621292',
+                'Items' => [
+                    [
+                        'AgentData' => [
+                            'AgentSign' => 'paying_agent',
+                            'OperationName' => 'Позиция чека',
+                            'Phones' => [
+                            '+790912312398'
+                            ],
+                            'ReceiverPhones' => [
+                                '+79221210697',
+                                '+79098561231'
+                            ],
+                            'TransferPhones' => [
+                                '+79221210697'
+                            ],
+                            'OperatorName' => 'Tinkoff',
+                            'OperatorAddress' => 'г. Тольятти',
+                            'OperatorInn' => '7710140679'
+                        ],
+                        'SupplierInfo' => [
+                            'Phones' => [
+                                '+79221210697',
+                                '+79098561231'
+                            ],
+                            'Name' => 'ООО Вендор товара',
+                            'Inn' => '7710140679'
+                        ],
+                        'Name' => 'Наименование товара 1',
+                        'Price' => 10000,
+                        'Quantity' => 1,
+                        'Amount' => 10000,
+                        'Tax' => 'vat10',
+                        'PaymentMethod' => 'full_payment',
+                        'PaymentObject' => 'agent_commission',
+                        'UserData' => 'Данные пользователя ext.test.qa@tinkoff.ru',
+                        'Excise' => '12.2',
+                        'CountryCode' => '056',
+                        'DeclarationNumber' => '12345678901',
+                        'MeasurementUnit' => 'шт',
+                        'MarkProcessingMode' => 'string',
+                        'MarkCode' => [
+                            'MarkCodeType' => 'EAN8',
+                            'Value' => '12345678'
+                        ],
+                        'MarkQuantity' => [
+                            'Numerator' => 1,
+                            'Denominator' => 2
+                        ],
+                        'SectoralItemProps' => [
+                            'FederalId' => '001',
+                            'Date' => '21.11.2020',
+                            'Number' => '123/43',
+                            'Value' => 'test value SectoralItemProps'
+                        ]
+                    ]
+                ],
+                'Payments' => [
+                    'Cash' => 90000,
+                    'Electronic' => 50000,
+                    'AdvancePayment' => 0,
+                    'Credit' => 0,
+                    'Provision' => 0
+                ]
+            ],
+            'Shops' => [
+                [
+                    'ShopCode' => '700456',
+                    'Amount' => 10000,
+                    'Name' => 'Товар',
+                    'Fee' => '500'
+                ]
+            ],
+            'Route' => 'BNPL',
+            'Source' => 'BNPL',
+        ]);
+
+        $paymentService = new PaymentService(
+            signatureService: $signatureService,
+            client: $client,
+        );
+
+        $response = $paymentService->confirm($request);
+
+        $this->assertInstanceOf(ComponentInterface::class, $response);
+        $this->assertInstanceOf(ConfirmResponse::class, $response);
+        $this->assertEquals([
+            'OrderId' => '21057',
+            'Status' => 'CONFIRMED',
+            'PaymentId' => '2304882',
+            'Params' => [
+                [
+                    'Key' => 'Route',
+                    'Value' => 'ACQ',
+                ],
+            ],
         ], $response->toArray());
     }
 }
