@@ -1,7 +1,7 @@
 {
     "name": "sergey-zatulivetrov/tinkoff-acquiring-client",
     "type": "library",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "description": "Client for working with Tinkoff's acquiring REST API",
     "keywords": [
         "tinkoff",
