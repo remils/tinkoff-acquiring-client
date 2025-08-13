@@ -6,9 +6,11 @@ namespace SergeyZatulivetrov\TinkoffAcquiring\Service;
 
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\HttpException;
 use SergeyZatulivetrov\TinkoffAcquiring\Client\Exception\TinkoffException;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\ConfirmRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\Init\InitRequestInterface;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\PaymentRequest;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Request\Payment\StateRequest;
+use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\ConfirmResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\InitResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\PaymentResponse;
 use SergeyZatulivetrov\TinkoffAcquiring\Component\Response\Payment\StateResponse;
@@ -68,5 +70,21 @@ class PaymentService extends AbstractService
         );
 
         return StateResponse::factory($response);
+    }
+
+    /**
+     * Подтвердить платеж
+     * @param ConfirmRequest $request
+     * @return ConfirmResponse
+     * @throws TinkoffException|HttpException
+     */
+    public function confirm(ConfirmRequest $request): ConfirmResponse
+    {
+        $response = $this->client->execute(
+            action: 'Confirm',
+            data: $this->signedRequest($request->toArray()),
+        );
+
+        return ConfirmResponse::factory($response);
     }
 }
